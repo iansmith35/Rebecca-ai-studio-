@@ -6,7 +6,7 @@ import { ChatInput } from './ChatInput';
 interface ChatWindowProps {
   messages: ChatMessage[];
   isLoading: boolean;
-  onSendMessage: (text: string, attachment?: File) => void;
+  onSendMessage: (text: string) => void;
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, onSendMessage }) => {

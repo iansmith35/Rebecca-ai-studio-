@@ -1,14 +1,11 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { LoginScreen } from './components/LoginScreen';
-import { IsheDashboard } from './components/IsheDashboard';
-import { KinkyBrizzleDashboard } from './components/KinkyBrizzleDashboard';
-import { CEODashboard } from './components/CEODashboard';
-import { ChatMessage, Business, Case } from './types';
+import { BusinessDashboard } from './components/BusinessDashboard';
+import { ChatMessage, Business } from './types';
 import { getAiResponse } from './services/geminiService';
 import { v4 as uuidv4 } from 'uuid';
-import { kinkyBrizzleProducts, tenancyCases } from './data/mockData';
-import { TenancyReportsDashboard } from './components/TenancyReportsDashboard';
 
 // A utility to manage speech synthesis
 const speaker = {
@@ -47,10 +44,10 @@ const speaker = {
 };
 
 const initialBusinesses: Business[] = [
-    { id: 'kb', name: 'Kinky Brizzle', icon: 'shirt', color: 'text-pink-400' },
     { id: 'ishe-ph', name: 'ISHE Plumbing & Heating', icon: 'plumbing', color: 'text-sky-400' },
     { id: 'ishe-pc', name: 'ISHE Property Checks', icon: 'property', color: 'text-teal-400' },
     { id: 'es', name: 'Event Safe', icon: 'shield', color: 'text-rose-400' },
+    { id: 'kb', name: 'Kinky Brizzle', icon: 'shirt', color: 'text-pink-400' },
     { id: 'fe', name: 'FetLife Events', icon: 'users', color: 'text-purple-400' },
     { id: 'qdl', name: 'Quantum Leap Digital', icon: 'business', color: 'text-blue-400' },
     { id: 'cc', name: 'Celestial Cafe', icon: 'cafe', color: 'text-amber-400' },
@@ -58,79 +55,53 @@ const initialBusinesses: Business[] = [
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [messages, setMessages] = useState<{[contextId: string]: ChatMessage[]}>({});
+  const [messages, setMessages] = useState<{[businessId: string]: ChatMessage[]}>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [businesses] = useState<Business[]>(initialBusinesses);
-  const [activeContext, setActiveContext] = useState<string>('ceo');
+  const [selectedBusinessId, setSelectedBusinessId] = useState<string>(businesses[0].id);
 
-  const selectedBusiness = businesses.find(b => b.id === activeContext);
+  const selectedBusiness = businesses.find(b => b.id === selectedBusinessId) || businesses[0];
 
   useEffect(() => {
     if (isAuthenticated) {
       speaker.loadVoices().then(() => {
-        const ceoWelcomeText = "Welcome back. All systems are online. I'm ready to discuss the empire, your personal life, or anything else you need. How can I help you today?";
-        const ceoWelcomeMessage: ChatMessage = {
+        const welcomeText = "Welcome. I'm Rebecca, ready to help you manage your empire. Select a business to get started.";
+        const welcomeMessage: ChatMessage = {
           id: uuidv4(),
           sender: 'ai',
-          text: ceoWelcomeText,
+          text: welcomeText,
           timestamp: new Date().toISOString(),
         };
-        
         const initialMessages = businesses.reduce((acc, business) => {
-            const welcomeText = `Welcome. Let's talk about ${business.name}.`;
-            acc[business.id] = [{
-              id: uuidv4(),
-              sender: 'ai',
-              text: welcomeText,
-              timestamp: new Date().toISOString(),
-            }];
+            acc[business.id] = [welcomeMessage];
             return acc;
         }, {} as {[businessId: string]: ChatMessage[]});
 
-        initialMessages['ceo'] = [ceoWelcomeMessage];
-
         setMessages(initialMessages);
-        speaker.speak(ceoWelcomeText);
+        speaker.speak(welcomeText);
       });
     }
   }, [isAuthenticated, businesses]);
 
-  const handleSendMessage = useCallback(async (inputText: string, attachment?: File) => {
-    if (!inputText.trim() && !attachment) return;
-
-    let attachmentData;
-    if (attachment) {
-        attachmentData = {
-            name: attachment.name,
-            type: attachment.type,
-            url: URL.createObjectURL(attachment)
-        };
-    }
+  const handleSendMessage = useCallback(async (inputText: string) => {
+    if (!inputText.trim() || !selectedBusinessId) return;
 
     const userMessage: ChatMessage = {
       id: uuidv4(),
       sender: 'user',
       text: inputText,
       timestamp: new Date().toISOString(),
-      attachment: attachmentData
     };
 
     setMessages(prev => ({
         ...prev,
-        [activeContext]: [...(prev[activeContext] || []), userMessage],
+        [selectedBusinessId]: [...(prev[selectedBusinessId] || []), userMessage],
     }));
     setIsLoading(true);
 
     try {
-      // Simulate adding the file to a master list and get a more descriptive prompt for the AI
-      let prompt = inputText;
-      if(attachment) {
-        prompt = `The user has uploaded a file named "${attachment.name}". Their message is: "${inputText}"`;
-      }
-
-      const contextName = selectedBusiness?.name || 'CEO';
-      const aiResponseText = await getAiResponse(prompt, messages[activeContext] || [], contextName);
-      
+      const currentHistory = messages[selectedBusinessId] || [];
+      const aiResponseText = await getAiResponse(inputText, currentHistory, selectedBusiness.name);
       const aiMessage: ChatMessage = {
         id: uuidv4(),
         sender: 'ai',
@@ -139,7 +110,7 @@ const App: React.FC = () => {
       };
       setMessages(prev => ({
         ...prev,
-        [activeContext]: [...(prev[activeContext] || []), aiMessage],
+        [selectedBusinessId]: [...(prev[selectedBusinessId] || []), aiMessage],
       }));
       speaker.speak(aiResponseText);
     } catch (error) {
@@ -151,93 +122,43 @@ const App: React.FC = () => {
         text: errorText,
         timestamp: new Date().toISOString(),
       };
-       setMessages(prev => ({
+      setMessages(prev => ({
         ...prev,
-        [activeContext]: [...(prev[activeContext] || []), errorMessage],
+        [selectedBusinessId]: [...(prev[selectedBusinessId] || []), errorMessage],
       }));
       speaker.speak(errorText);
     } finally {
       setIsLoading(false);
     }
-  }, [messages, selectedBusiness, activeContext]);
+  }, [messages, selectedBusiness.name, selectedBusinessId]);
   
-  const handleSelectContext = (contextId: string) => {
-    if (contextId === activeContext) return;
-    setActiveContext(contextId);
+  const handleSelectBusiness = (businessId: string) => {
+    if (businessId === selectedBusinessId) return;
 
-    const businessName = businesses.find(b => b.id === contextId)?.name;
-    let switchText: string;
-    if (contextId === 'ceo') {
-        switchText = "Right, let's talk strategy. I'm listening.";
-    } else {
-        switchText = `Okay, focusing on ${businessName}. What needs doing?`;
-    }
-    speaker.speak(switchText);
+    setSelectedBusinessId(businessId);
+    const businessName = businesses.find(b => b.id === businessId)?.name || 'your business';
+    const switchMessage: ChatMessage = {
+        id: uuidv4(),
+        sender: 'ai',
+        text: `Right then. Let's focus on ${businessName}. What's first on the agenda?`,
+        timestamp: new Date().toISOString(),
+    };
+    
+    setMessages(prev => {
+        const currentMessages = prev[businessId] || [];
+        // Only add the switch message if the history for this business is empty or doesn't already have it
+        if(currentMessages.length <= 1) { 
+            return { ...prev, [businessId]: [...currentMessages, switchMessage] };
+        }
+        return prev;
+    });
+
+    speaker.speak(switchMessage.text);
   };
 
   const handleLogin = () => {
     setIsAuthenticated(true);
   };
-
-  const renderDashboard = () => {
-    switch(activeContext) {
-      case 'ceo':
-        return (
-          <CEODashboard
-            key={activeContext}
-            messages={messages.ceo || []}
-            isLoading={isLoading}
-            onSendMessage={handleSendMessage}
-          />
-        );
-      case 'kb':
-        return (
-          <KinkyBrizzleDashboard
-            key={activeContext}
-            business={selectedBusiness!}
-            messages={messages.kb || []}
-            isLoading={isLoading}
-            onSendMessage={handleSendMessage}
-            products={kinkyBrizzleProducts}
-          />
-        );
-      case 'ishe-ph':
-         return (
-            <IsheDashboard 
-                key={activeContext}
-                business={selectedBusiness!}
-                messages={messages[activeContext] || []}
-                isLoading={isLoading}
-                onSendMessage={handleSendMessage}
-            />
-        );
-      case 'ishe-pc':
-        return (
-            <TenancyReportsDashboard 
-                key={activeContext}
-                business={selectedBusiness!}
-                messages={messages[activeContext] || []}
-                isLoading={isLoading}
-                onSendMessage={handleSendMessage}
-                tenancyCase={tenancyCases[0]}
-            />
-        );
-      default:
-        if (selectedBusiness) {
-            return (
-                <IsheDashboard 
-                    key={activeContext}
-                    business={selectedBusiness}
-                    messages={messages[activeContext] || []}
-                    isLoading={isLoading}
-                    onSendMessage={handleSendMessage}
-                />
-            );
-        }
-        return <div className="p-6">Please select a business context.</div>;
-    }
-  }
-
 
   if (!isAuthenticated) {
     return <LoginScreen onLogin={handleLogin} />;
@@ -247,11 +168,17 @@ const App: React.FC = () => {
     <div className="flex h-screen font-sans bg-gray-900 text-gray-100 overflow-hidden">
       <Sidebar 
         businesses={businesses}
-        activeContextId={activeContext}
-        onSelectContext={handleSelectContext}
+        selectedBusinessId={selectedBusinessId}
+        onSelectBusiness={handleSelectBusiness}
       />
       <main className="flex-1 flex flex-col">
-        {renderDashboard()}
+        <BusinessDashboard 
+            key={selectedBusinessId}
+            business={selectedBusiness}
+            messages={messages[selectedBusinessId] || []}
+            isLoading={isLoading}
+            onSendMessage={handleSendMessage}
+        />
       </main>
     </div>
   );

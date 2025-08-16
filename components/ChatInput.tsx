@@ -11,16 +11,14 @@ if (recognition) {
 }
 
 interface ChatInputProps {
-  onSendMessage: (text: string, attachment?: File) => void;
+  onSendMessage: (text: string) => void;
   isLoading: boolean;
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
   const [text, setText] = useState('');
   const [isListening, setIsListening] = useState(false);
-  const [attachment, setAttachment] = useState<File | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -31,10 +29,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if ((text.trim() || attachment) && !isLoading) {
-      onSendMessage(text, attachment || undefined);
+    if (text.trim() && !isLoading) {
+      onSendMessage(text);
       setText('');
-      setAttachment(null);
       if (isListening && recognition) {
         recognition.stop();
       }
@@ -61,12 +58,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }
         recognition.start();
     }
   };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-        setAttachment(e.target.files[0]);
-    }
-  }
 
   useEffect(() => {
     if (!recognition) return;
@@ -110,55 +101,34 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }
 
 
   return (
-    <div>
-        {attachment && (
-            <div className="mb-2 p-2 bg-gray-600 rounded-md flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm text-gray-200">
-                    <Icon name={attachment.type.startsWith('image/') ? 'image' : 'file-text'} className="w-4 h-4" />
-                    <span>{attachment.name}</span>
-                </div>
-                <button onClick={() => setAttachment(null)} className="text-gray-400 hover:text-white">&times;</button>
-            </div>
-        )}
-        <form onSubmit={handleSubmit} className="flex items-center bg-gray-700 rounded-lg p-2 space-x-2">
-            <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
-            <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isLoading}
-                className="p-2 rounded-md text-gray-400 hover:bg-gray-600 hover:text-white transition-colors duration-200 shrink-0"
-                aria-label="Attach file"
-            >
-                <Icon name="paperclip" className="w-5 h-5"/>
-            </button>
-            <textarea
-                ref={textareaRef}
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Ask Rebecca to do something..."
-                rows={1}
-                className="flex-1 bg-transparent text-gray-100 placeholder-gray-400 focus:outline-none resize-none px-2 max-h-40"
-                disabled={isLoading}
-            />
-            <button
-                type="button"
-                onClick={handleListen}
-                disabled={isLoading}
-                className={`p-2 rounded-md transition-colors duration-200 shrink-0 ${isListening ? 'bg-red-600 text-white animate-pulse' : 'text-gray-400 hover:bg-gray-600'}`}
-                aria-label={isListening ? 'Stop listening' : 'Start listening'}
-            >
-                <Icon name="microphone" className="w-5 h-5"/>
-            </button>
-            <button
-                type="submit"
-                disabled={isLoading || (!text.trim() && !attachment)}
-                className="bg-indigo-600 text-white rounded-md p-2 hover:bg-indigo-500 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors duration-200 shrink-0"
-                aria-label="Send message"
-            >
-                <Icon name="send" className="w-5 h-5"/>
-            </button>
-        </form>
-    </div>
+    <form onSubmit={handleSubmit} className="flex items-center bg-gray-700 rounded-lg p-2 space-x-2">
+      <textarea
+        ref={textareaRef}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Ask Rebecca to do something..."
+        rows={1}
+        className="flex-1 bg-transparent text-gray-100 placeholder-gray-400 focus:outline-none resize-none px-2 max-h-40"
+        disabled={isLoading}
+      />
+       <button
+        type="button"
+        onClick={handleListen}
+        disabled={isLoading}
+        className={`p-2 rounded-md transition-colors duration-200 shrink-0 ${isListening ? 'bg-red-600 text-white animate-pulse' : 'text-gray-400 hover:bg-gray-600'}`}
+        aria-label={isListening ? 'Stop listening' : 'Start listening'}
+      >
+        <Icon name="microphone" className="w-5 h-5"/>
+      </button>
+      <button
+        type="submit"
+        disabled={isLoading || !text.trim()}
+        className="bg-indigo-600 text-white rounded-md p-2 hover:bg-indigo-500 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors duration-200 shrink-0"
+        aria-label="Send message"
+      >
+        <Icon name="send" className="w-5 h-5"/>
+      </button>
+    </form>
   );
 };
