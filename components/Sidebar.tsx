@@ -1,0 +1,95 @@
+
+import React from 'react';
+import { Icon } from './Icon';
+import { Business } from '../types';
+
+interface SidebarProps {
+    businesses: Business[];
+    activeContextId: string;
+    onSelectContext: (id: string) => void;
+}
+
+const IntegrationLink: React.FC<{ icon: React.ReactNode; label: string }> = ({ icon, label }) => (
+  <a
+    href="#"
+    className="flex items-center p-3 text-gray-400 rounded-lg hover:bg-gray-700 hover:text-white transition-colors duration-200"
+    onClick={(e) => e.preventDefault()}
+  >
+    {icon}
+    <span className="ml-4 text-sm font-medium">{label}</span>
+  </a>
+);
+
+const BusinessLink: React.FC<{ business: Business; isSelected: boolean; onSelect: () => void; }> = ({ business, isSelected, onSelect }) => (
+    <button
+      onClick={onSelect}
+      className={`w-full flex items-center p-3 rounded-lg transition-colors duration-200 ${isSelected ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}`}
+    >
+      <Icon name={business.icon} className={`w-5 h-5 ${business.color}`} />
+      <span className="ml-4 text-sm font-medium">{business.name}</span>
+    </button>
+);
+
+
+export const Sidebar: React.FC<SidebarProps> = ({ businesses, activeContextId, onSelectContext }) => {
+  return (
+    <aside className="w-64 bg-gray-900 border-r border-gray-700/50 p-6 flex flex-col hidden sm:flex">
+      <div className="flex items-center mb-10 shrink-0">
+        <div className="p-2 bg-indigo-600 rounded-lg">
+           <Icon name="bot" className="w-6 h-6 text-white"/>
+        </div>
+        <h1 className="ml-3 text-lg font-bold text-white">Rebecca</h1>
+      </div>
+
+      <div className="flex-1 overflow-y-auto -mr-2 pr-2">
+        <nav className="space-y-8">
+          <div>
+              <button
+                  onClick={() => onSelectContext('ceo')}
+                  className={`w-full flex items-center p-3 rounded-lg transition-colors duration-200 mb-4 ${activeContextId === 'ceo' ? 'bg-amber-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white border border-amber-600/50'}`}
+                >
+                  <Icon name="crown" className="w-5 h-5 text-amber-400" />
+                  <span className="ml-4 text-sm font-medium">Empire HQ</span>
+              </button>
+              <h2 className="px-3 mb-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                Businesses
+              </h2>
+              <div className="space-y-2">
+                  {businesses.map(business => (
+                      <BusinessLink 
+                          key={business.id}
+                          business={business}
+                          isSelected={business.id === activeContextId}
+                          onSelect={() => onSelectContext(business.id)}
+                      />
+                  ))}
+              </div>
+          </div>
+
+          <div>
+              <h2 className="px-3 mb-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                Integrations
+              </h2>
+              <div className="space-y-2">
+                <IntegrationLink icon={<Icon name="gmail" className="w-5 h-5" />} label="Gmail" />
+                <IntegrationLink icon={<Icon name="calendar" className="w-5 h-5" />} label="Calendar" />
+                <IntegrationLink icon={<Icon name="drive" className="w-5 h-5" />} label="Drive" />
+                <IntegrationLink icon={<Icon name="docs" className="w-5 h-5" />} label="Docs" />
+                <IntegrationLink icon={<Icon name="sheets" className="w-5 h-5" />} label="Sheets" />
+                <IntegrationLink icon={<Icon name="quickbooks" className="w-5 h-5" />} label="QuickBooks" />
+                <IntegrationLink icon={<Icon name="bank" className="w-5 h-5" />} label="Banking" />
+                <IntegrationLink icon={<Icon name="share" className="w-5 h-5" />} label="Social Media" />
+              </div>
+          </div>
+        </nav>
+      </div>
+
+
+      <div className="mt-auto pt-6 shrink-0">
+        <div className="p-4 bg-gray-800 rounded-lg text-center">
+            <p className="text-sm text-gray-300">Your Autonomous Business Empire</p>
+        </div>
+      </div>
+    </aside>
+  );
+};
