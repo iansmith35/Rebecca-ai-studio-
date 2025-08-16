@@ -6,6 +6,11 @@ export interface ChatMessage {
   sender: Sender;
   text: string;
   timestamp: string;
+  attachment?: {
+    name: string;
+    type: string;
+    url: string;
+  };
 }
 
 export interface Business {

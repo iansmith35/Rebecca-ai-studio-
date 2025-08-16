@@ -96,14 +96,24 @@ const App: React.FC = () => {
     }
   }, [isAuthenticated, businesses]);
 
-  const handleSendMessage = useCallback(async (inputText: string) => {
-    if (!inputText.trim() || !activeContext) return;
+  const handleSendMessage = useCallback(async (inputText: string, attachment?: File) => {
+    if (!inputText.trim() && !attachment) return;
+
+    let attachmentData;
+    if (attachment) {
+        attachmentData = {
+            name: attachment.name,
+            type: attachment.type,
+            url: URL.createObjectURL(attachment)
+        };
+    }
 
     const userMessage: ChatMessage = {
       id: uuidv4(),
       sender: 'user',
       text: inputText,
       timestamp: new Date().toISOString(),
+      attachment: attachmentData
     };
 
     setMessages(prev => ({
@@ -113,8 +123,14 @@ const App: React.FC = () => {
     setIsLoading(true);
 
     try {
+      // Simulate adding the file to a master list and get a more descriptive prompt for the AI
+      let prompt = inputText;
+      if(attachment) {
+        prompt = `The user has uploaded a file named "${attachment.name}". Their message is: "${inputText}"`;
+      }
+
       const contextName = selectedBusiness?.name || 'CEO';
-      const aiResponseText = await getAiResponse(inputText, messages[activeContext] || [], contextName);
+      const aiResponseText = await getAiResponse(prompt, messages[activeContext] || [], contextName);
       
       const aiMessage: ChatMessage = {
         id: uuidv4(),
@@ -165,70 +181,62 @@ const App: React.FC = () => {
   };
 
   const renderDashboard = () => {
-    if (activeContext === 'kb' && selectedBusiness) {
-      return (
-        <KinkyBrizzleDashboard
-          key={activeContext}
-          business={selectedBusiness}
-          messages={messages[activeContext] || []}
-          isLoading={isLoading}
-          onSendMessage={handleSendMessage}
-          products={kinkyBrizzleProducts}
-        />
-      );
-    }
-    
-    if (activeContext === 'ishe-ph' && selectedBusiness) {
+    switch(activeContext) {
+      case 'ceo':
         return (
-            <IsheDashboard 
-                key={activeContext}
-                business={selectedBusiness}
-                messages={messages[activeContext] || []}
-                isLoading={isLoading}
-                onSendMessage={handleSendMessage}
-            />
-        );
-    }
-
-    if (activeContext === 'ishe-pc' && selectedBusiness) {
-      return (
-          <TenancyReportsDashboard 
-              key={activeContext}
-              business={selectedBusiness}
-              messages={messages[activeContext] || []}
-              isLoading={isLoading}
-              onSendMessage={handleSendMessage}
-              tenancyCase={tenancyCases[0]}
+          <CEODashboard
+            key={activeContext}
+            messages={messages.ceo || []}
+            isLoading={isLoading}
+            onSendMessage={handleSendMessage}
           />
-      );
-    }
-
-    if (activeContext === 'ceo') {
-      return (
-        <CEODashboard
-          key={activeContext}
-          messages={messages[activeContext] || []}
-          isLoading={isLoading}
-          onSendMessage={handleSendMessage}
-        />
-      );
-    }
-    
-    if (selectedBusiness) {
-        // A generic dashboard for other businesses that don't have a custom one yet
+        );
+      case 'kb':
         return (
+          <KinkyBrizzleDashboard
+            key={activeContext}
+            business={selectedBusiness!}
+            messages={messages.kb || []}
+            isLoading={isLoading}
+            onSendMessage={handleSendMessage}
+            products={kinkyBrizzleProducts}
+          />
+        );
+      case 'ishe-ph':
+         return (
             <IsheDashboard 
                 key={activeContext}
-                business={selectedBusiness}
+                business={selectedBusiness!}
                 messages={messages[activeContext] || []}
                 isLoading={isLoading}
                 onSendMessage={handleSendMessage}
             />
         );
+      case 'ishe-pc':
+        return (
+            <TenancyReportsDashboard 
+                key={activeContext}
+                business={selectedBusiness!}
+                messages={messages[activeContext] || []}
+                isLoading={isLoading}
+                onSendMessage={handleSendMessage}
+                tenancyCase={tenancyCases[0]}
+            />
+        );
+      default:
+        if (selectedBusiness) {
+            return (
+                <IsheDashboard 
+                    key={activeContext}
+                    business={selectedBusiness}
+                    messages={messages[activeContext] || []}
+                    isLoading={isLoading}
+                    onSendMessage={handleSendMessage}
+                />
+            );
+        }
+        return <div className="p-6">Please select a business context.</div>;
     }
-
-    // Fallback if no context matches (should not happen in normal flow)
-    return <div className="p-6">Please select a business context.</div>;
   }
 
 

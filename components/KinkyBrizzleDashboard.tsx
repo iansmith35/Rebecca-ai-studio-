@@ -3,16 +3,17 @@ import React, { useState } from 'react';
 import { Business, ChatMessage, Product } from '../types';
 import { Icon } from './Icon';
 import { ChatWindow } from './ChatWindow';
+import { FileManager } from './FileManager';
 
 interface KinkyBrizzleDashboardProps {
   business: Business;
   messages: ChatMessage[];
   isLoading: boolean;
-  onSendMessage: (text: string) => void;
+  onSendMessage: (text: string, attachment?: File) => void;
   products: Product[];
 }
 
-type Tab = 'shop' | 'chat';
+type Tab = 'shop' | 'chat' | 'files';
 
 const TabButton: React.FC<{ iconName: string; label: string; isActive: boolean; onClick: () => void;}> = ({ iconName, label, isActive, onClick }) => (
     <button
@@ -52,6 +53,8 @@ export const KinkyBrizzleDashboard: React.FC<KinkyBrizzleDashboardProps> = ({ bu
                 );
             case 'chat':
                 return <ChatWindow messages={messages} isLoading={isLoading} onSendMessage={onSendMessage} />;
+            case 'files':
+                return <FileManager />;
             default:
                 return null;
         }
@@ -66,6 +69,7 @@ export const KinkyBrizzleDashboard: React.FC<KinkyBrizzleDashboardProps> = ({ bu
                 <div className="flex items-center space-x-2">
                     <TabButton iconName="shirt" label="Shop" isActive={activeTab === 'shop'} onClick={() => setActiveTab('shop')} />
                     <TabButton iconName="chat" label="Chat with Kinky Bot" isActive={activeTab === 'chat'} onClick={() => setActiveTab('chat')} />
+                    <TabButton iconName="folder" label="Files" isActive={activeTab === 'files'} onClick={() => setActiveTab('files')} />
                 </div>
             </header>
             <div className="flex-1 overflow-y-auto">

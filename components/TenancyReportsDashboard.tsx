@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 import { Business, ChatMessage, Case, Comparison, Responsibility, Action } from '../types';
 import { Icon } from './Icon';
 import { ChatWindow } from './ChatWindow';
+import { FileManager } from './FileManager';
 
 interface TenancyReportsDashboardProps {
   business: Business;
   messages: ChatMessage[];
   isLoading: boolean;
-  onSendMessage: (text: string) => void;
+  onSendMessage: (text: string, attachment?: File) => void;
   tenancyCase: Case;
 }
 
@@ -75,7 +76,7 @@ const ComparisonCard: React.FC<{ item: Comparison }> = ({ item }) => (
 );
 
 export const TenancyReportsDashboard: React.FC<TenancyReportsDashboardProps> = ({ business, messages, isLoading, onSendMessage, tenancyCase }) => {
-    const [activeTab, setActiveTab] = useState<'analysis' | 'chat'>('analysis');
+    const [activeTab, setActiveTab] = useState<'analysis' | 'chat' | 'files'>('analysis');
     
     const totalTenantCost = tenancyCase.comparisons.reduce((sum, item) => item.analyst.responsibility === 'Tenant' ? sum + item.analyst.cost : sum, 0);
 
@@ -91,6 +92,9 @@ export const TenancyReportsDashboard: React.FC<TenancyReportsDashboardProps> = (
                     </button>
                     <button onClick={() => setActiveTab('chat')} className={`px-4 py-2 text-sm rounded-md flex items-center gap-2 ${activeTab === 'chat' ? 'bg-teal-600 text-white' : 'text-gray-400 hover:bg-gray-700'}`}>
                         <Icon name="chat" className="w-5 h-5"/>Chat with Analyst Bot
+                    </button>
+                    <button onClick={() => setActiveTab('files')} className={`px-4 py-2 text-sm rounded-md flex items-center gap-2 ${activeTab === 'files' ? 'bg-teal-600 text-white' : 'text-gray-400 hover:bg-gray-700'}`}>
+                        <Icon name="folder" className="w-5 h-5"/>Case Files
                     </button>
                 </div>
             </header>
@@ -136,6 +140,8 @@ export const TenancyReportsDashboard: React.FC<TenancyReportsDashboardProps> = (
                             </div>
                         </div>
                     </div>
+                ) : activeTab === 'files' ? (
+                    <FileManager />
                 ) : (
                     <ChatWindow messages={messages} isLoading={isLoading} onSendMessage={onSendMessage} />
                 )}

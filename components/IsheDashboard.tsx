@@ -6,15 +6,16 @@ import { ChatWindow } from './ChatWindow';
 import { JobDashboard } from './JobDashboard';
 import { CalendarView } from './CalendarView';
 import { ReportsView } from './ReportsView';
+import { FileManager } from './FileManager';
 
 interface IsheDashboardProps {
   business: Business;
   messages: ChatMessage[];
   isLoading: boolean;
-  onSendMessage: (text: string) => void;
+  onSendMessage: (text: string, attachment?: File) => void;
 }
 
-type Tab = 'chat' | 'jobs' | 'calendar' | 'reports';
+type Tab = 'chat' | 'jobs' | 'calendar' | 'reports' | 'files';
 
 const TabButton: React.FC<{ iconName: string; label: string; isActive: boolean; onClick: () => void;}> = ({ iconName, label, isActive, onClick }) => (
     <button
@@ -42,12 +43,21 @@ export const IsheDashboard: React.FC<IsheDashboardProps> = ({ business, messages
                     return <CalendarView />;
                 case 'reports':
                     return <ReportsView />;
+                case 'files':
+                    return <FileManager />;
                 default:
                     return <ChatWindow messages={messages} isLoading={isLoading} onSendMessage={onSendMessage} />;
             }
         }
-        // For all other businesses, only show the chat window for now
-        return <ChatWindow messages={messages} isLoading={isLoading} onSendMessage={onSendMessage} />;
+        // For all other businesses, handle chat and files
+        switch(activeTab) {
+            case 'chat':
+                return <ChatWindow messages={messages} isLoading={isLoading} onSendMessage={onSendMessage} />;
+            case 'files':
+                return <FileManager />;
+            default:
+                return <ChatWindow messages={messages} isLoading={isLoading} onSendMessage={onSendMessage} />;
+        }
     }
 
     return (
@@ -57,16 +67,20 @@ export const IsheDashboard: React.FC<IsheDashboardProps> = ({ business, messages
                     <span className={`font-bold ${business.color}`}>{business.name}</span>
                 </h2>
                 <div className="flex items-center space-x-2">
-                    {/* Only render dashboard tabs for ISHE */}
+                    {/* Render dashboard tabs based on business type */}
                     {business.id === 'ishe-ph' ? (
                         <>
                             <TabButton iconName="chat" label="Chat" isActive={activeTab === 'chat'} onClick={() => setActiveTab('chat')} />
                             <TabButton iconName="briefcase" label="Jobs" isActive={activeTab === 'jobs'} onClick={() => setActiveTab('jobs')} />
                             <TabButton iconName="calendar-days" label="Calendar" isActive={activeTab === 'calendar'} onClick={() => setActiveTab('calendar')} />
                             <TabButton iconName="document-text" label="Reports" isActive={activeTab === 'reports'} onClick={() => setActiveTab('reports')} />
+                            <TabButton iconName="folder" label="Files" isActive={activeTab === 'files'} onClick={() => setActiveTab('files')} />
                         </>
                     ) : (
-                         <TabButton iconName="chat" label="Chat" isActive={true} onClick={() => {}} />
+                         <>
+                            <TabButton iconName="chat" label="Chat" isActive={activeTab === 'chat'} onClick={() => setActiveTab('chat')} />
+                            <TabButton iconName="folder" label="Files" isActive={activeTab === 'files'} onClick={() => setActiveTab('files')} />
+                         </>
                     )}
                 </div>
             </header>
