@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Icon } from './Icon';
 import { Business } from '../types';

@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface IconProps {
@@ -180,7 +179,161 @@ export const Icon: React.FC<IconProps> = ({ name, className = 'w-6 h-6' }) => {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
       </svg>
     ),
+    chat: (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-3.04 8.25-6.75 8.25a9.75 9.75 0 01-4.875-1.332l-3.375 1.332 1.332-3.375A9.75 9.75 0 013 12c0-4.556 3.04-8.25 6.75-8.25S21 7.444 21 12z" />
+        </svg>
+    ),
   };
 
   return icons[name] || null;
-};
+};--- START OF FILE package.json ---
+
+{
+  "name": "rebecca-ai-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.14.0",
+    "express": "^4.19.2",
+    "react": "^19.1.1-canary-229871e41-20240726",
+    "react-dom": "^19.1.1-canary-229871e41-20240726",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.6",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.4"
+  }
+}--- START OF FILE vite.config.ts ---
+
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+})
+--- START OF FILE tsconfig.json ---
+
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}--- START OF FILE tsconfig.node.json ---
+
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "strict": true
+  },
+  "include": ["vite.config.ts"]
+}--- START OF FILE tailwind.config.js ---
+
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+--- START OF FILE postcss.config.js ---
+
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+--- START OF FILE index.js ---
+
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const app = express();
+const port = process.env.PORT || 8080;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve the static files from the Vite build directory
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Handles any requests that don't match the ones above
+app.get('*', (req,res) =>{
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+--- START OF FILE apphosting.yaml ---
+
+build:
+  run:
+    npm ci
+    npm run build
+start:
+  run:
+    npm start
+--- START OF FILE src/index.css ---
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;--- START OF FILE .env.example ---
+
+VITE_API_KEY="YOUR_GEMINI_API_KEY_HERE"
+
+I want to fix the deployment error.
+
+The log message "Cannot find module '/workspace/index.js'" indicates that the startup script required by App Hosting is missing.
+
+I need you to create a compatible startup script.
+
+Here is the solution:
+
+Modify index.js to use require syntax instead of import.
+Modify package.json to remove "type":"module".
+These changes will resolve the “module not found” error and allow the app to deploy successfully.

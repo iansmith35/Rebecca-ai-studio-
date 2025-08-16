@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Chat } from '@google/genai';
 import type { ChatMessage } from '../types';
 
@@ -61,12 +60,10 @@ const getSystemInstruction = (businessContext: string): string => {
     return GENERAL_SYSTEM_INSTRUCTION;
 }
 
-const apiKey = typeof process !== 'undefined' && process.env && process.env.API_KEY
-  ? process.env.API_KEY
-  : undefined;
+const apiKey = import.meta.env.VITE_API_KEY;
 
 if (!apiKey) {
-  console.warn("API_KEY environment variable not found. AI service will not work.");
+  console.warn("VITE_API_KEY environment variable not found. AI service will not work.");
 }
 
 const ai = new GoogleGenAI({ apiKey: apiKey || '' });
@@ -89,7 +86,7 @@ const getChatSession = (businessContext: string): Chat => {
 
 export const getAiResponse = async (prompt: string, history: ChatMessage[], businessContext: string): Promise<string> => {
   if (!apiKey) {
-    return "API Key is not configured. Please set the API_KEY environment variable.";
+    return "API Key is not configured. Please set the VITE_API_KEY environment variable.";
   }
   
   const chat = getChatSession(businessContext);
