@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import type { ChatMessage } from '../types';
 import { Message } from './Message';
@@ -7,9 +8,10 @@ interface ChatWindowProps {
   messages: ChatMessage[];
   isLoading: boolean;
   onSendMessage: (text: string) => void;
+  startListeningTrigger: number;
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, onSendMessage }) => {
+export const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, onSendMessage, startListeningTrigger }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -41,7 +43,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, onS
         </div>
       </div>
       <div className="p-4 bg-gray-800 border-t border-gray-700/50">
-        <ChatInput onSendMessage={onSendMessage} isLoading={isLoading} />
+        <ChatInput onSendMessage={onSendMessage} isLoading={isLoading} startListeningTrigger={startListeningTrigger} />
       </div>
     </div>
   );

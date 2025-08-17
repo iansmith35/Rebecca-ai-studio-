@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Icon } from './Icon';
 
@@ -13,9 +14,10 @@ if (recognition) {
 interface ChatInputProps {
   onSendMessage: (text: string) => void;
   isLoading: boolean;
+  startListeningTrigger?: number;
 }
 
-export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
+export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, startListeningTrigger }) => {
   const [text, setText] = useState('');
   const [isListening, setIsListening] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -26,6 +28,28 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [text]);
+  
+  const handleListen = () => {
+    if (!recognition) {
+        alert("Sorry, your browser doesn't support speech recognition.");
+        return;
+    }
+
+    if (isListening) {
+        recognition.stop();
+    } else {
+        setText('');
+        recognition.start();
+    }
+  };
+  
+  useEffect(() => {
+    if (startListeningTrigger && startListeningTrigger > 0) {
+      handleListen();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startListeningTrigger]);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,20 +66,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         handleSubmit(e as unknown as React.FormEvent);
-    }
-  };
-  
-  const handleListen = () => {
-    if (!recognition) {
-        alert("Sorry, your browser doesn't support speech recognition.");
-        return;
-    }
-
-    if (isListening) {
-        recognition.stop();
-    } else {
-        setText('');
-        recognition.start();
     }
   };
 
@@ -76,10 +86,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }
           interimTranscript += event.results[i][0].transcript;
         }
       }
-      setText(finalTranscript || interimTranscript);
-      if(finalTranscript.trim() && !isLoading) {
-        onSendMessage(finalTranscript.trim());
-        setText('');
+      
+      const currentText = finalTranscript || interimTranscript;
+      setText(currentText);
+
+      // In hands-free mode, a pause is interpreted as the end of a sentence
+      const isFinalAndNotEmpty = event.results[event.results.length - 1].isFinal && currentText.trim();
+      if (isFinalAndNotEmpty && !isLoading) {
+          onSendMessage(currentText.trim());
+          setText('');
       }
     };
     
@@ -93,7 +108,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }
     };
 
     return () => {
-        if (recognition) {
+        if (recognition && recognition.readyState === 'listening') {
             recognition.stop();
         }
     };

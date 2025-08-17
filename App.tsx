@@ -26,7 +26,7 @@ const speaker = {
     });
   },
 
-  async speak(text: string) {
+  async speak(text: string, onEnd?: () => void) {
     if (!this.voices.length) {
         await this.loadVoices();
     }
@@ -39,6 +39,9 @@ const speaker = {
     utterance.voice = ukVoice || this.voices.find(voice => voice.lang === 'en-GB') || null;
     utterance.pitch = 1;
     utterance.rate = 1;
+    if (onEnd) {
+      utterance.onend = onEnd;
+    }
     this.synth.speak(utterance);
   }
 };
@@ -59,6 +62,8 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [businesses] = useState<Business[]>(initialBusinesses);
   const [selectedBusinessId, setSelectedBusinessId] = useState<string>(businesses[0].id);
+  const [isHandsFree, setIsHandsFree] = useState<boolean>(false);
+  const [listenTrigger, setListenTrigger] = useState(0);
 
   const selectedBusiness = businesses.find(b => b.id === selectedBusinessId) || businesses[0];
 
@@ -99,6 +104,8 @@ const App: React.FC = () => {
     }));
     setIsLoading(true);
 
+    const speakCallback = isHandsFree ? () => setListenTrigger(t => t + 1) : undefined;
+
     try {
       const currentHistory = messages[selectedBusinessId] || [];
       const aiResponseText = await getAiResponse(inputText, currentHistory, selectedBusiness.name);
@@ -112,7 +119,7 @@ const App: React.FC = () => {
         ...prev,
         [selectedBusinessId]: [...(prev[selectedBusinessId] || []), aiMessage],
       }));
-      speaker.speak(aiResponseText);
+      speaker.speak(aiResponseText, speakCallback);
     } catch (error) {
       console.error("Error getting AI response:", error);
       const errorText = "I'm sorry, but I'm having trouble connecting to my services right now. Please try again in a moment.";
@@ -126,11 +133,11 @@ const App: React.FC = () => {
         ...prev,
         [selectedBusinessId]: [...(prev[selectedBusinessId] || []), errorMessage],
       }));
-      speaker.speak(errorText);
+      speaker.speak(errorText, speakCallback);
     } finally {
       setIsLoading(false);
     }
-  }, [messages, selectedBusiness.name, selectedBusinessId]);
+  }, [messages, selectedBusiness.name, selectedBusinessId, isHandsFree]);
   
   const handleSelectBusiness = (businessId: string) => {
     if (businessId === selectedBusinessId) return;
@@ -178,6 +185,9 @@ const App: React.FC = () => {
             messages={messages[selectedBusinessId] || []}
             isLoading={isLoading}
             onSendMessage={handleSendMessage}
+            isHandsFree={isHandsFree}
+            setIsHandsFree={setIsHandsFree}
+            startListeningTrigger={listenTrigger}
         />
       </main>
     </div>
