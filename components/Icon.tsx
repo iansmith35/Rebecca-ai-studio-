@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface IconProps {
@@ -56,10 +57,13 @@ export const Icon: React.FC<IconProps> = ({ name, className = 'w-6 h-6' }) => {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11a7 7 0 01-14 0m7 6v4m0 0H9m4 0h2M12 3a3 3 0 013 3v5a3 3 0 01-6 0V6a3 3 0 013-3z" />
       </svg>
     ),
-    copy: (
+    clipboard: (
       <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
       </svg>
+    ),
+    download: (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
     ),
     check: (
       <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -113,7 +117,7 @@ export const Icon: React.FC<IconProps> = ({ name, className = 'w-6 h-6' }) => {
     ),
     share: (
         <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.195.025.39.05.588.08m-1.165-.333a2.25 2.25 0 11-2.186 0m2.186 0c.195.025.39.05.588.08m-1.165-.333A2.25 2.25 0 113 12.25m11.25-2.25a2.25 2.25 0 100 2.186m0-2.186c-.195.025-.39.05-.588.08m1.165.333a2.25 2.25 0 112.186 0m-2.186 0c-.195.025-.39.05-.588.08m1.165.333A2.25 2.25 0 1121 12.25m-6.835-6.835a2.25 2.25 0 10-2.186 0m2.186 0c.195-.025.39-.05.588-.08m-1.165.333A2.25 2.25 0 1112.25 3m-1.165 3.333a2.25 2.25 0 100-2.186m0 2.186c.195-.025.39-.05.588-.08" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.195.025.39.05.588.08m-1.165-.333a2.25 2.25 0 11-2.186 0m2.186 0c.195.025.39.05.588.08m-1.165-.333A2.25 2.25 0 113 12.25m11.25-2.25a2.25 2.25 0 100 2.186m0-2.186c-.195.025-.39.05-.588.08m1.165.333a2.25 2.25 0 112.186 0m-2.186 0c-.195.025-.39.05-.588.08m1.165.333A2.25 2.25 0 1121 12.25m-6.835-6.835a2.25 2.25 0 10-2.186 0m2.186 0c.195-.025.39-.05.588.08m-1.165.333A2.25 2.25 0 1112.25 3m-1.165 3.333a2.25 2.25 0 100-2.186m0 2.186c.195-.025.39-.05.588.08" />
         </svg>
     ),
     google: (

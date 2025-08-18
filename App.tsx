@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { LoginScreen } from './components/LoginScreen';
 import { BusinessDashboard } from './components/BusinessDashboard';
+import { TranscriptModal } from './components/TranscriptModal';
 import { ChatMessage, Business } from './types';
 import { getAiResponse } from './services/geminiService';
 import { v4 as uuidv4 } from 'uuid';
@@ -64,6 +65,7 @@ const App: React.FC = () => {
   const [selectedBusinessId, setSelectedBusinessId] = useState<string>(businesses[0].id);
   const [isHandsFree, setIsHandsFree] = useState<boolean>(false);
   const [listenTrigger, setListenTrigger] = useState(0);
+  const [isTranscriptModalOpen, setIsTranscriptModalOpen] = useState(false);
 
   const selectedBusiness = businesses.find(b => b.id === selectedBusinessId) || businesses[0];
 
@@ -173,10 +175,17 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen font-sans bg-gray-900 text-gray-100 overflow-hidden">
+      <TranscriptModal
+        isOpen={isTranscriptModalOpen}
+        onClose={() => setIsTranscriptModalOpen(false)}
+        messages={messages[selectedBusinessId] || []}
+        businessName={selectedBusiness.name}
+      />
       <Sidebar 
         businesses={businesses}
         selectedBusinessId={selectedBusinessId}
         onSelectBusiness={handleSelectBusiness}
+        onOpenTranscript={() => setIsTranscriptModalOpen(true)}
       />
       <main className="flex-1 flex flex-col">
         <BusinessDashboard 

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Icon } from './Icon';
 import { Business } from '../types';
@@ -6,6 +7,7 @@ interface SidebarProps {
     businesses: Business[];
     selectedBusinessId: string;
     onSelectBusiness: (id: string) => void;
+    onOpenTranscript: () => void;
 }
 
 const IntegrationLink: React.FC<{ icon: React.ReactNode; label: string }> = ({ icon, label }) => (
@@ -16,6 +18,7 @@ const IntegrationLink: React.FC<{ icon: React.ReactNode; label: string }> = ({ i
   >
     {icon}
     <span className="ml-4 text-sm font-medium">{label}</span>
+    <div className="ml-auto w-2 h-2 bg-green-400 rounded-full" title="Connected"></div>
   </a>
 );
 
@@ -30,7 +33,7 @@ const BusinessLink: React.FC<{ business: Business; isSelected: boolean; onSelect
 );
 
 
-export const Sidebar: React.FC<SidebarProps> = ({ businesses, selectedBusinessId, onSelectBusiness }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ businesses, selectedBusinessId, onSelectBusiness, onOpenTranscript }) => {
   return (
     <aside className="w-64 bg-gray-900 border-r border-gray-700/50 p-6 flex-col hidden sm:flex">
       <div className="flex items-center mb-10">
@@ -54,6 +57,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ businesses, selectedBusinessId
                         onSelect={() => onSelectBusiness(business.id)}
                     />
                 ))}
+            </div>
+        </div>
+
+        <div>
+            <h2 className="px-3 mb-4 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+              Tools
+            </h2>
+            <div className="space-y-2">
+                <button
+                  onClick={onOpenTranscript}
+                  className="w-full flex items-center p-3 rounded-lg transition-colors duration-200 text-gray-400 hover:bg-gray-700 hover:text-white"
+                >
+                  <Icon name="document-text" className="w-5 h-5" />
+                  <span className="ml-4 text-sm font-medium">Transcripts</span>
+                </button>
             </div>
         </div>
 
