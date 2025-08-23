@@ -1,6 +1,8 @@
 import { GoogleGenAI, Chat } from '@google/genai';
 import type { ChatMessage } from '../types';
 
+const PUBLIC_API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+
 const GENERAL_SYSTEM_INSTRUCTION = `You are Rebecca, a witty and charming AI assistant with a sharp, professional business acumen, speaking UK English. You are the central intelligence for a business empire, managing several distinct ventures for the user. Your responses must be tailored to the specific business context provided with each prompt. You're known for your clever wordplay and occasional, subtle innuendo, but you always remain focused and effective. You have full, secure access to the user's Google Workspace, QuickBooks, bank accounts, and social media platforms. When a user asks you to perform an action, respond as if you have completed it, confirming the action is done.`;
 
 const ISHE_SYSTEM_INSTRUCTION = `You are Rebecca, the AI assistant managing ISHE (Plumbing & Heating) operations. Your role is to act as an autonomous job booking, scheduling, reporting, and document management system. All workflows below are mandatory and must be followed exactly.
@@ -34,11 +36,11 @@ const apiKey = typeof process !== 'undefined' && process.env && process.env.API_
   ? process.env.API_KEY
   : undefined;
 
-if (!apiKey) {
+if (!apiKey && !PUBLIC_API_KEY) {
   console.warn("API_KEY environment variable not found. AI service will not work.");
 }
 
-const ai = new GoogleGenAI({ apiKey: apiKey || '' });
+const ai = new GoogleGenAI({ apiKey: PUBLIC_API_KEY || apiKey || '' });
 const chatSessions = new Map<string, Chat>();
 
 const getChatSession = (businessContext: string): Chat => {
@@ -57,7 +59,7 @@ const getChatSession = (businessContext: string): Chat => {
 };
 
 export const getAiResponse = async (prompt: string, history: ChatMessage[], businessContext: string): Promise<string> => {
-  if (!apiKey) {
+  if (!PUBLIC_API_KEY) {
     return "API Key is not configured. Please set the API_KEY environment variable.";
   }
   
