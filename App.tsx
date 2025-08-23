@@ -49,12 +49,12 @@ const speaker = {
 
 const initialBusinesses: Business[] = [
     { id: 'ishe-ph', name: 'ISHE Plumbing & Heating', icon: 'plumbing', color: 'text-sky-400' },
-    { id: 'ishe-pc', name: 'ISHE Property Checks', icon: 'property', color: 'text-teal-400' },
     { id: 'es', name: 'Event Safe', icon: 'shield', color: 'text-rose-400' },
     { id: 'kb', name: 'Kinky Brizzle', icon: 'shirt', color: 'text-pink-400' },
     { id: 'fe', name: 'FetLife Events', icon: 'users', color: 'text-purple-400' },
-    { id: 'qdl', name: 'Quantum Leap Digital', icon: 'business', color: 'text-blue-400' },
-    { id: 'cc', name: 'Celestial Cafe', icon: 'cafe', color: 'text-amber-400' },
+    // The following can be re-enabled later if needed
+    // { id: 'qdl', name: 'Quantum Leap Digital', icon: 'business', color: 'text-blue-400' },
+    // { id: 'cc', name: 'Celestial Cafe', icon: 'cafe', color: 'text-amber-400' },
 ];
 
 const App: React.FC = () => {

@@ -77,7 +77,7 @@ export const BusinessDashboard: React.FC<BusinessDashboardProps> = ({ business, 
     }
 
     return (
-        <div className="flex-1 flex flex-col bg-gray-800 h-full">
+        <div className="flex-1 flex flex-col bg-gray-800">
             <header className="flex items-center justify-between p-4 border-b border-gray-700/50 shrink-0">
                 <h2 className="text-lg font-semibold text-white">
                     <span className={`font-bold ${business.color}`}>{business.name}</span>
@@ -97,7 +97,7 @@ export const BusinessDashboard: React.FC<BusinessDashboardProps> = ({ business, 
                     </div>
                 </div>
             </header>
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1">
                 {renderContent()}
             </div>
         </div>
