@@ -1,8 +1,11 @@
 
+'use client'
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Icon } from './Icon';
 
-const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+const SpeechRecognition = typeof window !== 'undefined' ? 
+  (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition : null;
 const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
 if (recognition) {

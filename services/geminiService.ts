@@ -1,4 +1,3 @@
-import { GoogleGenAI, Chat } from '@google/genai';
 import type { ChatMessage } from '../types';
 
 const GENERAL_SYSTEM_INSTRUCTION = `You are Rebecca, a witty and charming AI assistant with a sharp, professional business acumen, speaking UK English. You are the central intelligence for a business empire, managing several distinct ventures for the user. Your responses must be tailored to the specific business context provided with each prompt. You're known for your clever wordplay and occasional, subtle innuendo, but you always remain focused and effective. You have full, secure access to the user's Google Workspace, QuickBooks, bank accounts, and social media platforms. When a user asks you to perform an action, respond as if you have completed it, confirming the action is done.`;
@@ -30,45 +29,72 @@ const getSystemInstruction = (businessName: string): string => {
     return GENERAL_SYSTEM_INSTRUCTION;
 }
 
-const apiKey = typeof process !== 'undefined' && process.env && process.env.API_KEY
-  ? process.env.API_KEY
-  : undefined;
-
-if (!apiKey) {
-  console.warn("API_KEY environment variable not found. AI service will not work.");
-}
-
-const ai = new GoogleGenAI({ apiKey: apiKey || '' });
-const chatSessions = new Map<string, Chat>();
-
-const getChatSession = (businessContext: string): Chat => {
-    if (!chatSessions.has(businessContext)) {
-        console.log(`Creating new chat session for ${businessContext}`);
-        const systemInstruction = getSystemInstruction(businessContext);
-        const newChat = ai.chats.create({
-            model: 'gemini-2.5-flash',
-            config: {
-                systemInstruction: systemInstruction,
-            },
-        });
-        chatSessions.set(businessContext, newChat);
-    }
-    return chatSessions.get(businessContext)!;
-};
-
 export const getAiResponse = async (prompt: string, history: ChatMessage[], businessContext: string): Promise<string> => {
-  if (!apiKey) {
-    return "API Key is not configured. Please set the API_KEY environment variable.";
-  }
-  
-  const chat = getChatSession(businessContext);
-  
   try {
-    // Note: The chat object maintains its own history. We send only the latest prompt.
-    const result = await chat.sendMessage({ message: prompt });
-    return result.text;
+    const systemInstruction = getSystemInstruction(businessContext);
+    
+    // Create payload for the API route
+    const payload = {
+      contents: [
+        {
+          parts: [
+            {
+              text: `${systemInstruction}\n\nUser: ${prompt}`
+            }
+          ]
+        }
+      ],
+      generationConfig: {
+        temperature: 0.9,
+        topK: 1,
+        topP: 1,
+        maxOutputTokens: 2048,
+      },
+      safetySettings: [
+        {
+          category: "HARM_CATEGORY_HARASSMENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_HATE_SPEECH",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        }
+      ]
+    };
+
+    const response = await fetch("/api/ai", { 
+      method: "POST", 
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload) 
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
+      return data.candidates[0].content.parts[0].text;
+    } else {
+      throw new Error('Unexpected response format from API');
+    }
   } catch (error) {
-    console.error('Gemini API error:', error);
-    throw new Error('Failed to get response from Gemini API.');
+    console.error('AI API error:', error);
+    throw new Error('Failed to get response from AI API.');
   }
 };

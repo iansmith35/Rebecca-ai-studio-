@@ -1,4 +1,6 @@
 
+'use client'
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { LoginScreen } from './components/LoginScreen';
@@ -10,24 +12,26 @@ import { v4 as uuidv4 } from 'uuid';
 
 // A utility to manage speech synthesis
 const speaker = {
-  synth: window.speechSynthesis,
+  synth: typeof window !== 'undefined' ? window.speechSynthesis : null,
   voices: [] as SpeechSynthesisVoice[],
   
   loadVoices() {
+    if (!this.synth) return Promise.resolve([]);
     this.voices = this.synth.getVoices();
     return new Promise(resolve => {
         if (this.voices.length) {
             resolve(this.voices);
             return;
         }
-        this.synth.onvoiceschanged = () => {
-            this.voices = this.synth.getVoices();
+        this.synth!.onvoiceschanged = () => {
+            this.voices = this.synth!.getVoices();
             resolve(this.voices);
         };
     });
   },
 
   async speak(text: string, onEnd?: () => void) {
+    if (!this.synth) return;
     if (!this.voices.length) {
         await this.loadVoices();
     }
