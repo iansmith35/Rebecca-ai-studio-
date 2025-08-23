@@ -31,12 +31,12 @@ const getSystemInstruction = (businessName: string): string => {
     return GENERAL_SYSTEM_INSTRUCTION;
 }
 
-const apiKey = typeof process !== 'undefined' && process.env && process.env.API_KEY
-  ? process.env.API_KEY
+const apiKey = typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_API_KEY
+  ? process.env.NEXT_PUBLIC_API_KEY
   : undefined;
 
 if (!apiKey) {
-  console.warn("API_KEY environment variable not found. AI service will not work.");
+  console.warn("NEXT_PUBLIC_API_KEY environment variable not found. AI service will not work.");
 }
 
 const ai = new GoogleGenAI({ apiKey: apiKey || '' });
@@ -59,7 +59,7 @@ const getChatSession = (businessContext: string): Chat => {
 
 export const getAiResponse = async (prompt: string, history: ChatMessage[], businessContext: string): Promise<string> => {
   if (!apiKey) {
-    return "API Key is not configured. Please set the API_KEY environment variable.";
+    return "API Key is not configured. Please set the NEXT_PUBLIC_API_KEY environment variable.";
   }
   
   const chat = getChatSession(businessContext);
