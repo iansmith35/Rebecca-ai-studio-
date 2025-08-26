@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { REBECCA } from "@/lib/rebeccaConfig";
+import { getAppsScriptURL } from "@/lib/rebeccaConfig";
 
 export async function OPTIONS(){ return NextResponse.json({}, { headers: corsHeaders() }); }
 
 export async function POST(req: NextRequest){
   try{
     const body = await req.json();
-    const res  = await fetch(REBECCA.appsScriptURL, {
+    const res  = await fetch(getAppsScriptURL(), {
       method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(body)
     });
 
@@ -21,8 +21,8 @@ export async function POST(req: NextRequest){
       return NextResponse.json({
         ok:false,
         error:"BACKEND_HTML",
-        hint:"Your Apps Script returned HTML (likely auth page). Re-deploy Web App with 'Who has access: Anyone' and use the generic URL https://script.google.com/macros/s/.../exec.",
-        rawSnippet: text.slice(0,600)
+        hint:"Apps Script returned HTML (likely auth page). Deploy Web App as 'Anyone' and use the generic URL https://script.google.com/macros/s/.../exec .",
+        rawSnippet: text.slice(0,500)
       }, { status: 500, headers: corsHeaders() });
     }
     return NextResponse.json(data, { headers: corsHeaders() });
