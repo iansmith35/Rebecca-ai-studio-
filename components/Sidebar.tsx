@@ -34,26 +34,15 @@ const BusinessLink: React.FC<{ business: Business; isSelected: boolean; onSelect
 
 
 export const Sidebar: React.FC<SidebarProps> = ({ businesses, selectedBusinessId, onSelectBusiness, onOpenTranscript }) => {
-  const PUBLIC_API_KEY = process.env.NEXT_PUBLIC_API_KEY;
-  const showWarning = !PUBLIC_API_KEY;
+  // API key is now hard-coded in geminiService, so no warnings needed
 
   return (
     <aside className="w-64 bg-gray-900 border-r border-gray-700/50 p-6 flex-col hidden sm:flex">
       <div className="flex items-center mb-10">
-        <div className="p-2 bg-indigo-600 rounded-lg relative">
+        <div className="p-2 bg-indigo-600 rounded-lg">
            <Icon name="bot" className="w-6 h-6 text-white"/>
-           {showWarning && (
-             <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center" title="API Key not configured">
-               <Icon name="lightning-bolt" className="w-3 h-3 text-white"/>
-             </div>
-           )}
         </div>
         <h1 className="ml-3 text-lg font-bold text-white">Rebecca</h1>
-        {showWarning && (
-          <div className="ml-2 text-yellow-500" title="API Key not configured">
-            <Icon name="lightning-bolt" className="w-5 h-5"/>
-          </div>
-        )}
       </div>
 
        <nav className="flex-1 space-y-8">

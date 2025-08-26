@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# lockfile disabled to avoid conflicts for this private build
+package-lock.json

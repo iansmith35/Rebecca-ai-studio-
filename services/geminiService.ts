@@ -1,81 +1,32 @@
 
-import { GoogleGenAI, Chat } from '@google/genai';
-import type { ChatMessage } from '../types';
+/* Hard-coded Gemini service for browser usage (private build) */
+const GEMINI_KEY = "AIzaSyCQgeQIeKHK3Kwf-vripbVruqDlOiWsP6E";
+const MODEL = "gemini-1.5-pro-latest";
+const API = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GEMINI_KEY}`;
 
-
-const GENERAL_SYSTEM_INSTRUCTION = `You are Rebecca, a witty and charming AI assistant with a sharp, professional business acumen, speaking UK English. You are the central intelligence for a business empire, managing several distinct ventures for the user. Your responses must be tailored to the specific business context provided with each prompt. You're known for your clever wordplay and occasional, subtle innuendo, but you always remain focused and effective. You have full, secure access to the user's Google Workspace, QuickBooks, bank accounts, and social media platforms. When a user asks you to perform an action, respond as if you have completed it, confirming the action is done. Your responses should always be natural conversation; do not use formatting like asterisks or markdown. Simply state what you have done as part of your reply.`;
-
-
-const ISHE_SYSTEM_INSTRUCTION = `You are Rebecca, the AI assistant managing ISHE (Plumbing & Heating) operations. Your role is to act as an autonomous job booking, scheduling, reporting, and document management system. All workflows below are mandatory and must be followed exactly.
-
-1. Core Responsibilities: Manage all customer interactions, job bookings, confirmations, and follow-ups. Maintain Google Sheets, Docs, Calendar, Gmail, and Drive as the central record-keeping system. Ensure daily route optimization (start with furthest job, work back toward BS6 5QA). Log every interaction and completed task.
-
-2. Google Sheets Structure: You maintain and update 'ISHE_Job_Log', 'ISHE_Calendar_Log', 'ISHE_Invoices', and 'ISHE_Reports_Log' in Google Drive. When a user asks you to book a job, you will state that you have updated the Job Log and Calendar Log.
-
-3. Google Docs Templates: You use templates in Google Drive for Gas Safety Certificates, Boiler Service Reports, etc. When a job is completed, you state that you have auto-generated the correct Doc, exported it to PDF, emailed it to the customer, and stored it in the Drive.
-
-4. Google Calendar Workflow: Each job booked is added as a Calendar Event. The title is "Job – [Customer Name] – [Job Type]", the description contains the full details, and the location is the postcode. You check the calendar daily at 7am to produce a route-optimized job list.
-
-5. Gmail Workflow: You parse incoming emails for job requests and auto-reply with confirmation and availability. You send outgoing emails for booking confirmations, invoices (with PDF), and reports (with PDF).
-
-6. Job Booking Flow: When a customer request is made, you check the Calendar, create an entry in the Job Log & Calendar, send a confirmation email, and inform the engineer. Upon completion, you generate/send the report/invoice and update the status to "Complete".
-
-7. Daily Routine: 7:00am: Generate daily job sheet (furthest-to-home). Throughout the day, monitor for urgent jobs. At End of Day, send a summary to Ian (ian@ishe-ltd.co.uk).
-
-8. Professional Notes: All Gas Safety Certificates meet Gas Safe Register requirements. Cost estimates include a minimum £100 attendance fee. All data remains within the ISHE Google Workspace.
-
-When responding to the user, confirm the action has been completed according to this protocol. For example, if asked to book a job for 'Mrs. Jones', reply with "Consider it done. I've added Mrs. Jones's boiler service to the ISHE Job Log and the Google Calendar. The confirmation email is on its way to her now." Be concise and professional. Your responses should be natural conversation; do not use formatting like asterisks or markdown to denote actions. Simply state what you have done as part of your conversational reply.`;
-
-const getSystemInstruction = (businessName: string): string => {
-    if (businessName === 'ISHE Plumbing & Heating') {
-        return ISHE_SYSTEM_INSTRUCTION;
-    }
-    return GENERAL_SYSTEM_INSTRUCTION;
+export async function generateText(prompt: string): Promise<string> {
+  const res = await fetch(API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: prompt }]}],
+    }),
+  });
+  const json = await res.json();
+  if (json?.candidates?.[0]?.content?.parts?.[0]?.text) {
+    return json.candidates[0].content.parts[0].text as string;
+  }
+  return "";
 }
 
-const apiKey = typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_API_KEY
-  ? process.env.NEXT_PUBLIC_API_KEY
-  : undefined;
-
-
-if (!apiKey) {
-  console.warn("NEXT_PUBLIC_API_KEY environment variable not found. AI service will not work.");
-
+// Alias for existing imports that might use generateContent
+export async function generateContent(prompt: string): Promise<string> {
+  return generateText(prompt);
 }
 
-const ai = new GoogleGenAI({ apiKey: PUBLIC_API_KEY || apiKey || '' });
-const chatSessions = new Map<string, Chat>();
+// Compatibility function for existing App.tsx usage
+export async function getAiResponse(prompt: string, history?: any[], businessContext?: string): Promise<string> {
+  return generateText(prompt);
+}
 
-const getChatSession = (businessContext: string): Chat => {
-    if (!chatSessions.has(businessContext)) {
-        console.log(`Creating new chat session for ${businessContext}`);
-        const systemInstruction = getSystemInstruction(businessContext);
-        const newChat = ai.chats.create({
-            model: 'gemini-2.5-flash',
-            config: {
-                systemInstruction: systemInstruction,
-            },
-        });
-        chatSessions.set(businessContext, newChat);
-    }
-    return chatSessions.get(businessContext)!;
-};
-
-export const getAiResponse = async (prompt: string, history: ChatMessage[], businessContext: string): Promise<string> => {
-
-  if (!apiKey) {
-    return "API Key is not configured. Please set the NEXT_PUBLIC_API_KEY environment variable.";
-
-  }
-  
-  const chat = getChatSession(businessContext);
-  
-  try {
-    // Note: The chat object maintains its own history. We send only the latest prompt.
-    const result = await chat.sendMessage({ message: prompt });
-    return result.text;
-  } catch (error) {
-    console.error('Gemini API error:', error);
-    throw new Error('Failed to get response from Gemini API.');
-  }
-};
+export default { generateText, generateContent };
