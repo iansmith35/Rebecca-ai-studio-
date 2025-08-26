@@ -1,18 +1,10 @@
-import './globals.css'
-
-export const metadata = {
-  title: 'Rebecca Studio',
-  description: 'Private Hard-Coded Setup (ISHE + Personal Hub)',
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export const metadata = { title: "Rebecca Studio" };
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body style={{ background: "#000", color: "#e5e7eb", margin: 0, fontFamily: "system-ui" }}>
+        {children}
+      </body>
     </html>
-  )
+  );
 }
