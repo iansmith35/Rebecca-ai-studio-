@@ -1,18 +1,21 @@
 
 "use client";
 import { REBECCA } from "@/lib/rebeccaConfig";
-export default function Sidebar({ active, onSelect }:{ active:string; onSelect:(k:string)=>void }){
+export default function Sidebar({ active, onSelect }:{ active:string; onSelect:(k:string)=>void }) {
   return (
-    <aside className="w-64 bg-zinc-900 text-zinc-100 h-screen p-4 space-y-6">
-      <div className="text-lg font-semibold">Rebecca</div>
-      <div className="text-xs uppercase tracking-wide text-zinc-400">Businesses</div>
-      <nav className="space-y-2">
-        {REBECCA.brands.map(b=> (
-          <button key={b.key} onClick={()=>onSelect(b.key)} className={`w-full text-left px-3 py-2 rounded-lg hover:bg-zinc-800 ${active===b.key?"bg-zinc-800":''}`}>{b.label}</button>
+    <aside style={{ width: 256, background: "#0a0a0a", color: "#e4e4e7", height: "100vh", padding: 16 }}>
+      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 12 }}>Rebecca</div>
+      <div style={{ fontSize: 11, letterSpacing: 1, color: "#a1a1aa", textTransform: "uppercase" }}>Businesses</div>
+      <nav style={{ marginTop: 8, display: "grid", gap: 8 }}>
+        {REBECCA.brands.map(b => (
+          <button key={b.key} onClick={() => onSelect(b.key)}
+            style={{ textAlign: "left", padding: "8px 12px", borderRadius: 10, background: active===b.key ? "#18181b":"transparent", color: "#e4e4e7", border:"1px solid #18181b" }}>
+            {b.label}
+          </button>
         ))}
       </nav>
-      <div className="text-xs uppercase tracking-wide text-zinc-400">Integrations</div>
-      <div className="text-sm text-zinc-300">Gmail • Calendar • Drive • Docs • Sheets • QuickBooks • Banking</div>
+      <div style={{ marginTop: 16, fontSize: 11, letterSpacing: 1, color: "#a1a1aa", textTransform: "uppercase" }}>Integrations</div>
+      <div style={{ fontSize: 13, color: "#c4c4cc" }}>Gmail • Calendar • Drive • Docs • Sheets • QuickBooks • Banking</div>
     </aside>
   );
 }
