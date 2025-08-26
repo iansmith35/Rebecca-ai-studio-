@@ -13,3 +13,11 @@ export const REBECCA = {
     { key: "personal", label: "Personal Hub", default: false, gated: true },
   ],
 } as const;
+
+export function getAppsScriptURL(): string {
+  if (typeof window !== "undefined") {
+    const o = localStorage.getItem("rebecca.appsScriptURL");
+    if (o && /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(o)) return o;
+  }
+  return REBECCA.appsScriptURL;
+}
