@@ -1,8 +1,8 @@
+"use client";
 import Sidebar from "@/components/Sidebar";
 import { ISHEPanel, PersonalPanel } from "@/components/Panels";
 import Card from "@/components/Card";
 import { REBECCA } from "@/lib/rebeccaConfig";
-"use client";
 import { useState } from "react";
 
 export default function Page() {
