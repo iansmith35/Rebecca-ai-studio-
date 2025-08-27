@@ -38,6 +38,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             border-radius: var(--radius);
             box-shadow: var(--card-glow);
           }
+          .neon{
+            background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+            border:1px solid rgba(124,58,237,.25);
+            border-radius: var(--radius);
+            box-shadow: var(--card-glow);
+          }
+          .card-title{
+            font-weight:800; letter-spacing:.4px;
+            text-shadow: 0 0 2px var(--neon-2), 0 0 24px var(--neon-1), 0 0 48px var(--neon-1);
+            font-size:16px; margin-bottom:8px;
+          }
+          .small{
+            font-size:12px; color:var(--muted);
+          }
+          .row{
+            display:flex; gap:8px; align-items:center;
+          }
           .btn{
             border-radius:12px; padding:10px 14px; border:1px solid rgba(124,58,237,.45);
             background: linear-gradient(180deg, rgba(124,58,237,.35), rgba(6,182,212,.25));
