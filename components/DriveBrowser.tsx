@@ -1,34 +1,41 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 
-type Entry = { id:string; name:string; type:"folder"|"file"; time?:string; mimeType?:string };
-type Resp = { items: Entry[]; parentId?:string|null; rootId:string; currentId:string; isRoot:boolean };
+async function proxy(action:string,payload:any){ 
+  const r=await fetch('/api/rebecca',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...payload})}); 
+  return await r.json(); 
+}
 
-async function api(payload:any){ const r=await fetch("/api/rebecca",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); return await r.json(); }
+export default function DriveBrowser({ scope }:{ scope:"ishe"|"personal" }) {
+  const [stack,setStack]=useState<{id:string,name:string}[]>([]);
+  const cur = stack[stack.length-1];
 
-export default function DriveBrowser({ scope }:{ scope:"ishe"|"personal" }){
-  const [stack,setStack]=useState<string[]>([]); const [data,setData]=useState<Resp|null>(null);
-  const load=useCallback(async(parentId?:string)=>{ const j:Resp=await api({action:"listDrive2", scope, parentId}); setData(j); },[scope]);
+  const [items,setItems]=useState<any[]>([]);
+  const load=useCallback(async()=>{
+    const j = await proxy('listDrive',{ scope, folderId:cur?.id || null, max:100 });
+    if(j?.ok) setItems(j.items || []);
+  },[scope, cur?.id]);
   useEffect(()=>{ load(); },[load]);
-  const enter=(id:string)=>{ setStack(s=>[...s,id]); load(id); };
-  const up=()=>{ if(!data) return; if(data.isRoot) return; load(data.parentId||undefined); setStack(s=>s.slice(0,-1)); };
+
+  const enter=(it:any)=>{ if(it.kind==="folder") setStack([...stack,{id:it.id,name:it.title}]); };
+  const up=()=>{ if(stack.length>0) setStack(stack.slice(0,-1)); };
 
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
         <button onClick={up} className="px-2 py-1 rounded bg-zinc-800 border border-violet-800/40 text-xs">Up</button>
-        <div className="text-xs text-zinc-400 truncate">Current: {data?.currentId||"root"}</div>
+        <div className="text-xs text-zinc-400 truncate">Current: {cur?.name || "root"}</div>
       </div>
       <ul className="divide-y divide-violet-800/30">
-        {data?.items?.map(it=>(
+        {items.map((it:any)=>(
           <li key={it.id} className="py-2 text-sm flex items-center justify-between">
             <div>
-              <span className="mr-2">{it.type==="folder"?"📁":"📄"}</span>
-              {it.type==="folder"
-                ? <button className="underline" onClick={()=>enter(it.id)}>{it.name}</button>
-                : <a className="underline" href={`https://drive.google.com/open?id=${it.id}`} target="_blank" rel="noreferrer">{it.name}</a>}
+              <span className="mr-2">{it.kind==="folder"?"📁":"📄"}</span>
+              {it.kind==="folder"
+                ? <button className="underline" onClick={()=>enter(it)}>{it.title}</button>
+                : <a className="underline" href={`https://drive.google.com/open?id=${it.id}`} target="_blank" rel="noreferrer">{it.title}</a>}
             </div>
-            <div className="text-xs text-zinc-400">{it.time?new Date(it.time).toLocaleString():""}</div>
+            <div className="text-xs text-zinc-400">{it.time ? new Date(it.time).toLocaleString() : ""}</div>
           </li>
         ))}
       </ul>

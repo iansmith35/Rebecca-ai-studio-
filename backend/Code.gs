@@ -19,7 +19,7 @@ function doPost(e){
       case 'health':       return _json({ok:true,ts:new Date().toISOString()});
       case 'listEmails':   return _json({ok:true,items:listEmails(d.max)});
       case 'listCalendar': return _json({ok:true,items:listCalendar(d.max)});
-      case 'listDrive':    return _json({ok:true,items:listDrive(d.scope,d.max)});
+      case 'listDrive':    return _json({ok:true,items:listDrive(d.scope,d.max,d.folderId)});
       case 'uploadFile':   return _json({ok:true,...uploadFile(d)});
       case 'addTask':      return _json({ok:true,...addTask(d.sheetId||SHEET_ID,d.text)});
       case 'listTasks':    return _json({ok:true,...listTasks(d.sheetId||SHEET_ID)});
@@ -40,10 +40,30 @@ function listCalendar(max){ max=Number(max)||10;
   const ev=CalendarApp.getDefaultCalendar().getEvents(now,end);
   return ev.slice(0,max).map(e=>({title:e.getTitle(),time:Utilities.formatDate(e.getStartTime(),Session.getScriptTimeZone(),'EEE dd MMM HH:mm')+' – '+Utilities.formatDate(e.getEndTime(),Session.getScriptTimeZone(),'HH:mm'),location:e.getLocation()||''}));
 }
-function listDrive(scope,max){ max=Number(max)||25;
-  const folder=_ensureFolder(scope==='personal'?DRIVE_PERSONAL:DRIVE_ISHE);
-  const files=folder.getFiles(); const items=[];
-  while(files.hasNext()&&items.length<max){ const f=files.next(); items.push({name:f.getName(),title:f.getName(),time:f.getLastUpdated(),id:f.getId()}); }
+function listDrive(scope,max,folderId){ max=Number(max)||25;
+  let folder;
+  if(folderId){
+    folder=DriveApp.getFolderById(folderId);
+  }else{
+    folder=_ensureFolder(scope==='personal'?DRIVE_PERSONAL:DRIVE_ISHE);
+  }
+  
+  const items=[];
+  
+  // Add folders first
+  const folders=folder.getFolders();
+  while(folders.hasNext()&&items.length<max){
+    const f=folders.next();
+    items.push({name:f.getName(),title:f.getName(),time:f.getLastUpdated(),id:f.getId(),kind:'folder'});
+  }
+  
+  // Add files
+  const files=folder.getFiles();
+  while(files.hasNext()&&items.length<max){
+    const f=files.next();
+    items.push({name:f.getName(),title:f.getName(),time:f.getLastUpdated(),id:f.getId(),kind:'file'});
+  }
+  
   return items;
 }
 function uploadFile(d){
