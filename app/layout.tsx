@@ -5,51 +5,75 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head>
         <style>{`
-          :root{
-            --bg:#070818;
-            --panel:#0b0e2a;
-            --panel-2:#0a0d24;
-            --fg:#e8eaff;
-            --muted:#9aa3c7;
-            --neon-1:#7c3aed;    /* purple */
-            --neon-2:#06b6d4;    /* cyan   */
-            --neon-3:#22c55e;    /* green  */
-            --glow: 0 0 15px var(--neon-2), 0 0 35px var(--neon-1);
-            --card-glow: 0 0 12px rgba(6,182,212,.35), inset 0 0 34px rgba(124,58,237,.15);
-            --radius: 18px;
+          :root{ 
+            --bg:#07090e; 
+            --panel:#0c1020; 
+            --glow:#7c5cff; 
+            --ink:#d7d9ff; 
+            --muted:#9aa3c7; 
+            --border:#1b1f33; 
           }
-          *{box-sizing:border-box}
-          html,body{height:100%}
+          html,body{background:var(--bg); color:var(--ink);}
+          *{box-sizing:border-box;}
+          .neon{ 
+            border:1px solid var(--border); 
+            background:linear-gradient(180deg,rgba(124,92,255,.08),rgba(124,92,255,.02) 80%), var(--panel); 
+            box-shadow:0 0 0 1px rgba(124,92,255,.15) inset, 0 0 40px rgba(124,92,255,.06); 
+            border-radius:18px; 
+          }
+          .btn{ 
+            background:#5b48ff; 
+            color:white; 
+            border-radius:12px; 
+            padding:.55rem .9rem; 
+            cursor:pointer;
+            border:none;
+          }
+          .input{ 
+            background:#0b1122; 
+            border:1px solid var(--border); 
+            color:var(--ink); 
+            border-radius:12px; 
+            padding:.55rem .8rem; 
+            width:100%; 
+          }
+          .h{ font-weight:700; letter-spacing:.4px;}
+          .small{color:var(--muted); font-size:12px}
+          .row{display:flex; gap:10px; align-items:center;}
+          .grid{display:grid; gap:16px;}
+          .grid-2{grid-template-columns:1fr 1fr;}
+          .card-title{font-weight:600; margin-bottom:.4rem;}
+          .link{color:#b5b9ff; text-decoration:underline;}
+          .chip{padding:.25rem .5rem; border:1px solid var(--border); border-radius:999px; background:#0b1122; color:var(--muted);}
+          .badge{font-size:11px; color:#cfe; opacity:.85}
+          
+          /* Legacy compatibility classes */
           body{
             margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-            color:var(--fg); background: radial-gradient(1200px 800px at -10% -20%, rgba(124,58,237,.25), transparent 60%),
-                              radial-gradient(900px 700px at 120% 120%, rgba(6,182,212,.18), transparent 55%),
-                              var(--bg);
+            height:100%;
           }
-          a{color:var(--neon-2); text-decoration:none}
+          html{height:100%;}
+          a{color:#b5b9ff; text-decoration:none}
           a:hover{text-decoration:underline}
           .neon-title{
             font-weight:800; letter-spacing:.4px;
-            text-shadow: 0 0 2px var(--neon-2), 0 0 24px var(--neon-1), 0 0 48px var(--neon-1);
+            text-shadow: 0 0 2px var(--glow), 0 0 24px var(--glow), 0 0 48px var(--glow);
           }
           .glass{
-            background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
-            border:1px solid rgba(124,58,237,.25);
-            border-radius: var(--radius);
-            box-shadow: var(--card-glow);
-          }
-          .btn{
-            border-radius:12px; padding:10px 14px; border:1px solid rgba(124,58,237,.45);
-            background: linear-gradient(180deg, rgba(124,58,237,.35), rgba(6,182,212,.25));
-            color:#fff; cursor:pointer;
-            box-shadow: 0 0 10px rgba(124,58,237,.5), inset 0 0 24px rgba(6,182,212,.22);
+            border:1px solid var(--border); 
+            background:linear-gradient(180deg,rgba(124,92,255,.08),rgba(124,92,255,.02) 80%), var(--panel); 
+            box-shadow:0 0 0 1px rgba(124,92,255,.15) inset, 0 0 40px rgba(124,92,255,.06); 
+            border-radius:18px; 
           }
           .btn:hover{ filter:brightness(1.1)}
-          .input{
-            background: #0b0f2d; border:1px solid rgba(6,182,212,.35); color:var(--fg);
-            border-radius:12px; padding:10px 12px;
-          }
-          .chip{font-size:12px; color:var(--muted)}
+          
+          /* Tailwind compatibility for existing components */
+          .bg-black\/40 { background: rgba(11, 17, 34, 0.6) !important; }
+          .border-violet-800\/40 { border-color: var(--border) !important; }
+          .border-violet-800\/30 { border-color: rgba(27, 31, 51, 0.7) !important; }
+          .border-violet-800\/20 { border-color: rgba(27, 31, 51, 0.5) !important; }
+          .bg-violet-800\/30 { background: rgba(124, 92, 255, 0.2) !important; }
+          .bg-zinc-800 { background: var(--panel) !important; }
         `}</style>
       </head>
       <body>{children}</body>
