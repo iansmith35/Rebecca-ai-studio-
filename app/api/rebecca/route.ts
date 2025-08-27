@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAppsScriptURL } from "@/lib/rebeccaConfig";
+import { REBECCA, BACKEND_SECRET } from "@/lib/rebeccaConfig";
+
+function corsHeaders(){
+  return {
+    "Access-Control-Allow-Origin":"*",
+    "Access-Control-Allow-Methods":"POST, OPTIONS",
+    "Access-Control-Allow-Headers":"Content-Type",
+  };
+}
 
 // Mock data for local development
 const mockEmailsData = [
@@ -73,9 +81,12 @@ export async function POST(req: NextRequest){
       return handleMockBackend(body);
     }
     
+    // Add secret to the payload when proxying to Apps Script
+    const payload = { ...body, secret: BACKEND_SECRET };
+    
     // Try to use real Google Apps Script backend
-    const res = await fetch(getAppsScriptURL(), {
-      method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(body)
+    const res = await fetch(REBECCA.appsScriptURL, {
+      method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload)
     });
 
     const text = await res.text();
@@ -85,23 +96,16 @@ export async function POST(req: NextRequest){
       try { data = JSON.parse(text); } catch {}
     }
     if (!data) {
-      // Most common cause: Web App not public ("Anyone") OR domain-scoped URL.
       return NextResponse.json({
         ok:false,
         error:"BACKEND_HTML",
-        hint:"Apps Script returned HTML (likely auth page). Deploy Web App as 'Anyone' and use the generic URL https://script.google.com/macros/s/.../exec .",
-        rawSnippet: text.slice(0,500),
-        suggestion: "For local development, set USE_MOCK_BACKEND=true in your .env.local file"
+        hint:"Apps Script returned HTML (likely a Google login page). Ensure the Web App is deployed as: Execute as Me, Who has access: Anyone, AND that the URL is the generic https://script.google.com/macros/s/{ID}/exec",
+        rawSnippet: text.slice(0,400)
       }, { status: 500, headers: corsHeaders() });
     }
     return NextResponse.json(data, { headers: corsHeaders() });
   }catch(e:any){
-    const errorResponse = { 
-      ok:false, 
-      error: e?.message||String(e),
-      suggestion: process.env.NODE_ENV === 'development' ? "For local development, set USE_MOCK_BACKEND=true in your .env.local file" : undefined
-    };
-    return NextResponse.json(errorResponse, { status: 500, headers: corsHeaders() });
+    return NextResponse.json({ ok:false, error: e?.message||String(e) }, { status: 500, headers: corsHeaders() });
   }
 }
 
@@ -171,12 +175,4 @@ function handleMockBackend(body: any) {
         mock: true
       }, { status: 400, headers: corsHeaders() });
   }
-}
-
-function corsHeaders(){
-  return {
-    "Access-Control-Allow-Origin":"*",
-    "Access-Control-Allow-Methods":"POST, OPTIONS",
-    "Access-Control-Allow-Headers":"Content-Type",
-  };
 }
