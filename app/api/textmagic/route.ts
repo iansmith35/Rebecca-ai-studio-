@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+
 export async function POST(req: NextRequest){
   try{
     const { path, method = "GET", username, apiKey, qs, body, ...rest } = await req.json();
@@ -62,5 +63,6 @@ export async function POST(req: NextRequest){
     return NextResponse.json({ ok:false, error:"Unknown TextMagic path or action" }, { status: 400 });
   }catch(e:any){
     return NextResponse.json({ ok:false, error:e?.message||String(e) }, { status: 500 });
+
   }
 }

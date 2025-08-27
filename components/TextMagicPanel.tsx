@@ -23,10 +23,12 @@ export default function TextMagicPanel(){
     if(j?.ok) setMessages(j.data?.resources||[]);
   };
   const send=async()=>{
+
     if(!username||!apiKey) return alert("Save TextMagic creds first");
     const j=await tm("messages",{ method:"POST", username, apiKey, body:{ phones: to, text: message }});
     if(!j?.ok) alert("Send failed");
     setMessage(""); await refresh();
+
   };
 
   return (
