@@ -66,14 +66,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             border-radius:18px; 
           }
           .btn:hover{ filter:brightness(1.1)}
-          
-          /* Tailwind compatibility for existing components */
-          .bg-black\/40 { background: rgba(11, 17, 34, 0.6) !important; }
-          .border-violet-800\/40 { border-color: var(--border) !important; }
-          .border-violet-800\/30 { border-color: rgba(27, 31, 51, 0.7) !important; }
-          .border-violet-800\/20 { border-color: rgba(27, 31, 51, 0.5) !important; }
-          .bg-violet-800\/30 { background: rgba(124, 92, 255, 0.2) !important; }
-          .bg-zinc-800 { background: var(--panel) !important; }
+
+          .input{
+            background: #0b0f2d; border:1px solid rgba(6,182,212,.35); color:var(--fg);
+            border-radius:12px; padding:10px 12px;
+          }
+          .chip{font-size:12px; color:var(--muted)}
+          .h{font-weight:600}
+          .small{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px}
+          .neon{
+            border:none; padding:10px 12px; border-radius:8px; 
+            color:var(--fg); cursor:pointer; font-size:14px;
+          }
+          .neon:hover{opacity:0.8}
+          .grid{display:grid; gap:4px}
+
         `}</style>
       </head>
       <body>{children}</body>
