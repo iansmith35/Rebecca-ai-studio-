@@ -8,7 +8,7 @@ export default function TextMagicPanel(){
   useEffect(()=>{ setUsername(localStorage.getItem("tm_user")||""); setApiKey(localStorage.getItem("tm_key")||""); },[]);
   const save=()=>{ localStorage.setItem("tm_user",username); localStorage.setItem("tm_key",apiKey); setMsg("Saved ✅"); setTimeout(()=>setMsg(""),1200); };
   const send=async()=>{
-    const r=await fetch("/api/textmagic",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"send", creds:{username,apiKey}, to, text})});
+    const r=await fetch("/api/textmagic",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({path:"messages", method:"POST", username, apiKey, body:{phones:to, text}})});
     const j=await r.json(); setMsg(j?.ok?"Sent ✅":"Error: "+(j?.error||""));
   };
 
