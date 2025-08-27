@@ -1,29 +1,32 @@
 "use client";
+import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import { ISHEPanel, PersonalPanel } from "@/components/Panels";
-import Card from "@/components/Card";
 import { REBECCA } from "@/lib/rebeccaConfig";
 import { useState } from "react";
 
-export default function Page(){
-  const defaultTab = (REBECCA.brands.find(b=>b.default)?.key ?? "ishe") as string;
-  const [active,setActive]=useState<string>(defaultTab);
+export default function Page(){ return <main><ClientShell/></main>; }
+
+function ClientShell(){
+  const [active,setActive]=useState<string>(REBECCA.brands.find(b=>b.default)?.key || "ishe");
+  const label=(k:string)=>REBECCA.brands.find(x=>x.key===k)?.label || k;
   return (
-    <main style={{ display:"flex", minHeight:"100vh", gap:16, padding:16 }}>
-      <Sidebar active={active} onSelect={(k:string)=>setActive(k)} />
-      <section style={{ flex:1, display:"grid", gap:16 }}>
-        <header className="glass" style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:14 }}>
-          <div className="neon-title" style={{ fontSize:24 }}>{label(active)}</div>
-          <div className="chip">
-            <a href="/api/health">Health</a> • <a href={REBECCA.appsScriptURL} target="_blank">Authorize Backend</a>
+    <div style={{display:"flex", minHeight:"100vh"}}>
+      <Sidebar active={active} onSelect={setActive}/>
+      <section style={{flex:1, padding:20, display:"grid", gap:16}}>
+        <header className="row" style={{justifyContent:"space-between"}}>
+          <h1 className="h" style={{fontSize:22}}>{label(active)}</h1>
+          <div className="row small">
+            <a href="/api/rebecca" className="link">Health</a>
+            <a href="/api/rebecca" className="link">•</a>
+            <a href="#" onClick={(e)=>{e.preventDefault(); window.open("/api/rebecca","_blank");}} className="link">Authorize Backend</a>
           </div>
         </header>
-        {active==='ishe'&&<ISHEPanel/>}
-        {active==='personal'&&<PersonalPanel/>}
-        {active==='eventsafe'&&<Card title="Event Safe">Linked later. Placeholder panel.</Card>}
-        {active==='kinkybrizzle'&&<Card title="Kinky Brizzle">Linked later. Placeholder panel.</Card>}
+        {active==="ishe" && <ISHEPanel/>}
+        {active==="personal" && <PersonalPanel/>}
+        {active==="eventsafe" && <div className="neon" style={{padding:14}}>Event Safe — placeholder</div>}
+        {active==="kinkybrizzle" && <div className="neon" style={{padding:14}}>Kinky Brizzle — placeholder</div>}
       </section>
-    </main>
+    </div>
   );
-  function label(key:string){ const m=REBECCA.brands.find(x=>x.key===key); return m?.label||key; }
 }

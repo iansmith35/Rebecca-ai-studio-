@@ -1,6 +1,7 @@
 "use client";
 import Chat from "./Chat";
 import QuickTask from "./QuickTask";
+import Tasks from "./Tasks";
 import DriveBrowser from "./DriveBrowser";
 import TextMagicPanel from "./TextMagicPanel";
 import { REBECCA } from "@/lib/rebeccaConfig";
@@ -36,6 +37,7 @@ export function ISHEPanel(){
     const c=await proxy('listCalendar',{ max:20 }); setEvents(c?.items||[]);
   })(); },[]);
   return (
+
     <div className="grid" style={{gap:16}}>
       <Chat threadId="default-ishe"/>
       <QuickTask/>
@@ -46,6 +48,7 @@ export function ISHEPanel(){
       <div className="neon" style={{padding:14}}>
         <div className="card-title">QuickBooks</div>
         <div className="small">We&apos;ll add OAuth here (QuickBooks requires a Connect button). For now this is a placeholder.</div>
+
       </div>
     </div>
   );
