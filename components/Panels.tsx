@@ -2,6 +2,7 @@
 import Card from "./Card";
 import Chat from "./Chat";
 import QuickTask from "./QuickTask";
+import Tasks from "./Tasks";
 import DriveBrowser from "./DriveBrowser";
 import TextMagicPanel from "./TextMagicPanel";
 import Conversations from "./Conversations";
@@ -18,7 +19,7 @@ export function ISHEPanel(){
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <Card title="Chat (ISHE)"><Chat threadId={thread}/></Card>
-        <Card title="Quick Add Task (Heartbeat)"><QuickTask/></Card>
+        <div><Tasks/></div>
         <Card title="Upcoming Appointments (Calendar)"><CalendarList/></Card>
         <Card title="Recent Emails"><EmailList/></Card>
         <Card title="ISHE Drive"><DriveBrowser scope="ishe"/></Card>

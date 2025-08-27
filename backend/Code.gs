@@ -22,6 +22,9 @@ function doPost(e){
       case 'listDrive':    return _json({ok:true,items:listDrive(d.scope,d.max)});
       case 'uploadFile':   return _json({ok:true,...uploadFile(d)});
       case 'addTask':      return _json({ok:true,...addTask(d.sheetId||SHEET_ID,d.text)});
+      case 'listTasks':    return _json({ok:true,...listTasks(d.sheetId||SHEET_ID)});
+      case 'completeTask': return _json({ok:true,...completeTask(d.sheetId||SHEET_ID,d.id)});
+      case 'updateTask':   return _json({ok:true,...updateTask(d.sheetId||SHEET_ID,d.row,d.status,d.due)});
       case 'logChat':      return _json({ok:true,...logChat(d.sheetId||SHEET_ID,d.userText,d.botText)});
       default:             return _json({ok:false,error:'Unknown action: '+d.action});
     }
@@ -51,7 +54,43 @@ function uploadFile(d){
 }
 function addTask(sheetId,text){ const ss=SpreadsheetApp.openById(sheetId);
   const sh=_ensureSheet(ss,HEARTBEAT_TAB,['ts','source','kind','text','status','colF','colG','app']);
-  sh.appendRow([new Date(),'VOICE','TODO',text||'','PENDING','','','Rebecca Studio']); return {added:true};
+  const id = 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  sh.appendRow([new Date(),'VOICE','TODO',text||'','PENDING','','',id]); return {added:true};
+}
+function listTasks(sheetId){ const ss=SpreadsheetApp.openById(sheetId);
+  const sh=_ensureSheet(ss,HEARTBEAT_TAB,['ts','source','kind','text','status','colF','colG','app']);
+  const data=sh.getDataRange().getValues(); const header=data[0]; const rows=data.slice(1);
+  const items = rows.filter(row => row[2] === 'TODO').map(row => {
+    const created = row[0] ? Utilities.formatDate(new Date(row[0]), Session.getScriptTimeZone(), 'dd/MM/yy HH:mm') : '';
+    const doneAt = row[4] === 'DONE' && row[0] ? Utilities.formatDate(new Date(row[0]), Session.getScriptTimeZone(), 'dd/MM/yy HH:mm') : undefined;
+    return {
+      id: row[7] || ('task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)),
+      created: created,
+      text: row[3] || '',
+      status: row[4] || 'PENDING',
+      due: row[5] || undefined,
+      doneAt: doneAt
+    };
+  });
+  return {items: items};
+}
+function completeTask(sheetId,taskId){ const ss=SpreadsheetApp.openById(sheetId);
+  const sh=_ensureSheet(ss,HEARTBEAT_TAB,['ts','source','kind','text','status','colF','colG','app']);
+  const data=sh.getDataRange().getValues(); 
+  for(let i=1; i<data.length; i++){
+    if(data[i][7] === taskId){
+      sh.getRange(i+1, 5).setValue('DONE'); // status column
+      sh.getRange(i+1, 6).setValue(Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd/MM/yy HH:mm')); // doneAt column
+      return {completed:true};
+    }
+  }
+  return {completed:false, error:'Task not found'};
+}
+function updateTask(sheetId,row,status,due){ const ss=SpreadsheetApp.openById(sheetId);
+  const sh=_ensureSheet(ss,HEARTBEAT_TAB,['ts','source','kind','text','status','colF','colG','app']);
+  if(status) sh.getRange(row, 5).setValue(status);
+  if(due !== undefined) sh.getRange(row, 6).setValue(due);
+  return {updated:true};
 }
 function logChat(sheetId,userText,botText){ const ss=SpreadsheetApp.openById(sheetId);
   const sh=_ensureSheet(ss,MEMORY_TAB,['ts','app','user','bot']);

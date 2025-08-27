@@ -50,6 +50,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             border-radius:12px; padding:10px 12px;
           }
           .chip{font-size:12px; color:var(--muted)}
+          .neon{
+            background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+            border:1px solid rgba(124,58,237,.25);
+            border-radius: var(--radius);
+            box-shadow: var(--card-glow);
+          }
+          .card-title{
+            font-weight:600; font-size:18px; margin-bottom:8px;
+            color:var(--neon-2);
+          }
+          .row{
+            display:flex; align-items:center; gap:8px;
+          }
+          .small{
+            font-size:13px; color:var(--muted);
+          }
+          .badge{
+            background:var(--neon-3); color:#fff; padding:4px 8px; border-radius:6px; font-size:12px;
+          }
         `}</style>
       </head>
       <body>{children}</body>
