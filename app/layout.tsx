@@ -50,6 +50,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             border-radius:12px; padding:10px 12px;
           }
           .chip{font-size:12px; color:var(--muted)}
+          .h{font-weight:600}
+          .small{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px}
+          .neon{
+            border:none; padding:10px 12px; border-radius:8px; 
+            color:var(--fg); cursor:pointer; font-size:14px;
+          }
+          .neon:hover{opacity:0.8}
+          .grid{display:grid; gap:4px}
         `}</style>
       </head>
       <body>{children}</body>

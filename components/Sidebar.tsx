@@ -2,24 +2,21 @@
 "use client";
 import { REBECCA } from "@/lib/rebeccaConfig";
 
-export default function Sidebar({ active, onSelect }:{ active:string; onSelect:(k:string)=>void }) {
+export default function Sidebar({ active, onSelect }:{ active:string; onSelect:(k:string)=>void }){
   return (
-    <aside style={{ width: 280, padding: 16, height: "100vh", background: "linear-gradient(180deg,#070818,#04061a)" }}
-           className="glass">
-      <div className="neon-title" style={{ fontSize: 22, marginBottom: 12 }}>Rebecca</div>
-      <div className="chip" style={{ textTransform: "uppercase", letterSpacing: 1 }}>Businesses</div>
-      <nav style={{ marginTop: 8, display: "grid", gap: 8 }}>
-        {REBECCA.brands.map(b => (
+    <aside style={{width:240, padding:16}}>
+      <div className="h" style={{fontSize:18, marginBottom:16}}>Rebecca</div>
+      <div className="small" style={{marginBottom:8}}>BUSINESSES</div>
+      <nav className="grid">
+        {REBECCA.brands.map(b=>(
           <button key={b.key} onClick={()=>onSelect(b.key)}
-            className="btn" style={{ textAlign:"left", background: active===b.key
-              ? "linear-gradient(180deg, rgba(124,58,237,.55), rgba(6,182,212,.35))"
-              : "linear-gradient(180deg, rgba(124,58,237,.28), rgba(6,182,212,.18))" }}>
+            className="neon" style={{padding:"10px 12px", textAlign:"left", background: active===b.key?"#13183a":"var(--panel)"}}>
             {b.label}
           </button>
         ))}
       </nav>
-      <div className="chip" style={{ marginTop: 14, textTransform: "uppercase", letterSpacing: 1 }}>Integrations</div>
-      <div style={{ fontSize: 13, color: "var(--muted)" }}>Gmail • Calendar • Drive • Docs • Sheets • QuickBooks • Banking</div>
+      <div className="small" style={{marginTop:16}}>INTEGRATIONS</div>
+      <div className="small">Gmail • Calendar • Drive • Docs • Sheets • QuickBooks • Banking • TextMagic</div>
     </aside>
   );
 }
