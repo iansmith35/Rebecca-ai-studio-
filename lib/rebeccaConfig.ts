@@ -2,9 +2,7 @@ export const REBECCA = {
   adminEmail: "ian@ishe-ltd.co.uk",
   personalPin: "2338",
   geminiKey: "AIzaSyCQgeQIeKHK3Kwf-vripbVruqDlOiWsP6E",
-  // Use the GENERIC (public) Apps Script Web App URL — no "/a/macros/...":
-  appsScriptURL: "https://script.google.com/macros/s/AKfycbwmykp945lzYJgbFG9_6_qVHTJDYHuYeNP5PqiuU4v89VYHixA1RrbWqtC-hWpgyac_ig/exec",
-  // Restore the original memory/tasks sheet
+  appsScriptURL: "https://script.google.com/macros/s/AKfycbxbJ7XQq8RU6m4wNNXz7XXB9tPngbgHhHowmtoPAvvS2xYcRzlKztwvFEllMsIFvimH8g/exec",
   sheetId: "1OGLC-mafxToexD4rXx5pVbCNOEO6DP5T6s05REwbdvY",
   brands: [
     { key: "ishe", label: "ISHE Plumbing & Heating", default: true },
@@ -13,6 +11,8 @@ export const REBECCA = {
     { key: "personal", label: "Personal Hub", default: false, gated: true },
   ],
 } as const;
+
+export const BACKEND_SECRET = "rebecca-2338-secret";
 
 export function getAppsScriptURL(): string {
   if (typeof window !== "undefined") {
