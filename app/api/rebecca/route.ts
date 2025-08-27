@@ -28,7 +28,7 @@ export async function POST(req: NextRequest){
       return NextResponse.json({
         ok:false,
         error:"BACKEND_HTML",
-        hint:"Apps Script returned HTML. Ensure the URL is the generic https://script.google.com/macros/s/.../exec and the Web App is deployed as: Execute as Me, Who has access: Anyone.",
+        hint:"Apps Script returned HTML. Use generic https://script.google.com/macros/s/{ID}/exec and Web App: Execute as Me, Who has access: Anyone.",
         rawSnippet: text.slice(0,400)
       }, { status: 500, headers: corsHeaders() });
     }

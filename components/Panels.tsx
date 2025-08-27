@@ -1,65 +1,74 @@
 "use client";
-import Card from "./Card"; import Chat from "./Chat"; import Dropzone from "./Dropzone"; import { REBECCA } from "@/lib/rebeccaConfig"; import { useEffect, useState } from "react";
-
-async function proxy(action:string,payload:any){ 
-  const r=await fetch("/api/rebecca",{ method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ action, ...payload })});
-  return await r.json(); 
-}
-function List({items}:{items:any[]}){ 
-  return (<ul style={{ margin:0, padding:0, listStyle:"none" }}>
-    {items.map((it:any,idx:number)=>(<li key={idx} style={{ padding:"8px 0", borderBottom:"1px solid rgba(255,255,255,.06)" }}>
-      <div style={{ fontWeight:600 }}>{it.title||it.subject||it.name}</div>
-      {it.time&&<div className="chip">{String(it.time)}</div>}
-      {it.snippet&&<div className="chip">{it.snippet}</div>}
-    </li>))}
-  </ul>); 
-}
+import Card from "./Card";
+import Chat from "./Chat";
+import QuickTask from "./QuickTask";
+import DriveBrowser from "./DriveBrowser";
+import TextMagicPanel from "./TextMagicPanel";
+import Conversations from "./Conversations";
+import { useEffect, useState } from "react";
+import { REBECCA } from "@/lib/rebeccaConfig";
 
 export function ISHEPanel(){
-  const [emails,setEmails]=useState<any[]>([]); const [events,setEvents]=useState<any[]>([]); const [drive,setDrive]=useState<any[]>([]);
-  const [err,setErr]=useState<string>("");
-
-  useEffect(()=>{ (async()=>{
-    const e=await proxy("listEmails",{max:10}); if(e?.ok) setEmails(e.items||[]); else setErr(e?.raw||e?.error||"");
-    const c=await proxy("listCalendar",{max:10}); if(c?.ok) setEvents(c.items||[]); else setErr(prev=>prev||c?.raw||c?.error||"");
-    const d=await proxy("listDrive",{scope:"ishe",max:12}); if(d?.ok) setDrive(d.items||[]); else setErr(prev=>prev||d?.raw||d?.error||"");
-  })(); },[]);
-
+  const [thread,setThread]=useState<string>("default-ishe");
+  useEffect(()=>{ if(!thread) setThread("default-ishe"); },[thread]);
   return (
-    <div style={{ display:"grid", gap:16, gridTemplateColumns:"1fr 1fr" }}>
-      <Card title="Chat (ISHE)"><Chat/></Card>
-      <Card title="Quick Add Task (Heartbeat)"><QuickTask/></Card>
-      <Card title="Upcoming Appointments (Calendar)">{events.length?<List items={events}/>:<Empty err={err}/>}</Card>
-      <Card title="Recent Emails">{emails.length?<List items={emails}/>:<Empty err={err}/>}</Card>
-      <Card title="ISHE Documents (Drive)">{drive.length?<List items={drive}/>:<Empty err={err}/>}</Card>
-      <Card title="Drop Files to ISHE Drive"><Dropzone scope="ishe"/></Card>
+    <div className="grid grid-cols-1 xl:grid-cols-[260px_1fr] gap-4">
+      <div>
+        <Conversations active={thread} onSelect={setThread}/>
+      </div>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <Card title="Chat (ISHE)"><Chat threadId={thread}/></Card>
+        <Card title="Quick Add Task (Heartbeat)"><QuickTask/></Card>
+        <Card title="Upcoming Appointments (Calendar)"><CalendarList/></Card>
+        <Card title="Recent Emails"><EmailList/></Card>
+        <Card title="ISHE Drive"><DriveBrowser scope="ishe"/></Card>
+        <Card title="TextMagic"><TextMagicPanel/></Card>
+      </div>
     </div>
   );
 }
 
 export function PersonalPanel(){
   const [ok,setOk]=useState(false); const [pin,setPin]=useState("");
-  const [drive,setDrive]=useState<any[]>([]); const [err,setErr]=useState("");
-  useEffect(()=>{ if(ok){ (async()=>{ const d=await proxy("listDrive",{scope:"personal",max:16}); if(d?.ok) setDrive(d.items||[]); else setErr(d?.raw||d?.error||""); })(); } },[ok]);
+  const [thread,setThread]=useState<string>("default-personal");
   if(!ok) return (<Card title="Enter PIN to access Personal Hub">
-    <div style={{ display:"flex", gap:8 }}>
-      <input value={pin} onChange={e=>setPin(e.target.value)} placeholder="PIN" className="input"/>
-      <button onClick={()=>setOk(pin===REBECCA.personalPin)} className="btn">Unlock</button>
+    <div className="flex gap-2">
+      <input value={pin} onChange={e=>setPin(e.target.value)} placeholder="PIN" className="bg-black/40 border border-violet-800/40 rounded-xl px-3 py-2"/>
+      <button onClick={()=>setOk(pin===REBECCA.personalPin)} className="px-3 py-2 rounded-xl bg-violet-600">Unlock</button>
     </div>
   </Card>);
   return (
-    <div style={{ display:"grid", gap:16, gridTemplateColumns:"1fr 1fr" }}>
-      <Card title="Chat (Personal)"><Chat/></Card>
-      <Card title="Personal Documents (Drive)">{drive.length?<List items={drive}/>:<Empty err={err}/>}</Card>
-      <Card title="Drop Files to Personal Drive"><Dropzone scope="personal"/></Card>
+    <div className="grid grid-cols-1 xl:grid-cols-[260px_1fr] gap-4">
+      <div><Conversations active={thread} onSelect={setThread}/></div>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <Card title="Chat (Personal)"><Chat threadId={thread}/></Card>
+        <Card title="Personal Drive"><DriveBrowser scope="personal"/></Card>
+      </div>
     </div>
   );
 }
 
-function Empty({err}:{err?:string}){ 
-  return <div className="chip">{err?`Backend says: ${err}`:"Nothing to show yet."}</div>;
+// lightweight lists driven by backend
+async function api(payload:any){ const r=await fetch("/api/rebecca",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); return await r.json(); }
+
+function EmailList(){
+  const [items,setItems]=useState<any[]>([]);
+  useEffect(()=>{ (async()=>{ const j=await api({action:"listEmails",max:10}); setItems(j?.items||[]); })(); },[]);
+  return <List items={items} field="subject"/>;
 }
-function QuickTask(){ const [text,setText]=useState(""); 
-  const add=async()=>{ if(!text.trim())return; await proxy("addTask",{ sheetId:REBECCA.sheetId, text}); setText(""); alert("Task added to Heartbeat ✅"); };
-  return (<div style={{ display:"flex", gap:8 }}><input value={text} onChange={e=>setText(e.target.value)} placeholder="e.g., remind me to order valves" className="input" style={{ flex:1 }}/><button onClick={add} className="btn">Add</button></div>);
+function CalendarList(){
+  const [items,setItems]=useState<any[]>([]);
+  useEffect(()=>{ (async()=>{ const j=await api({action:"listCalendar",max:10}); setItems(j?.items||[]); })(); },[]);
+  return <List items={items} field="title"/>;
+}
+function List({items,field}:{items:any[];field:string}){
+  return (<ul className="divide-y divide-violet-800/30">
+    {items.map((it,idx)=>(
+      <li key={idx} className="py-2 text-sm">
+        <div className="font-medium">{it[field]}</div>
+        {it.time&&<div className="text-xs text-zinc-400">{String(it.time)}</div>}
+        {it.snippet&&<div className="text-xs text-zinc-400">{it.snippet}</div>}
+      </li>
+    ))}
+  </ul>);
 }
