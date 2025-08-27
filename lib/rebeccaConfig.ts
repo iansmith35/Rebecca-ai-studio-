@@ -1,7 +1,7 @@
 export const REBECCA = {
   adminEmail: "ian@ishe-ltd.co.uk",
   personalPin: "2338",
-  geminiKey: "AIzaSyCQgeQIeKHK3Kwf-vripbVruqDlOiWsP6E",
+  geminiKey: process.env.NEXT_PUBLIC_API_KEY || "AIzaSyCQgeQIeKHK3Kwf-vripbVruqDlOiWsP6E",
   // Apps Script Web App (Deploy > New Deployment > Web App > Execute as Me, Only Me)
   appsScriptURL: "https://script.google.com/macros/s/AKfycbxbJ7XQq8RU6m4wNNXz7XXB9tPngbgHhHowmtoPAvvS2xYcRzlKztwvFEllMsIFvimH8g/exec",
   // Voiceflow/Rebecca HQ Sheet (Memory/Tasks)
@@ -16,6 +16,15 @@ export const REBECCA = {
 
   // Optional: save TextMagic creds from UI (stored in localStorage on your browser)
   textmagic: { base: "https://rest.textmagic.com/api/v2" },
+
+  // Firebase configuration (from environment variables)
+  firebase: {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  },
 } as const;
 
 export const BACKEND_SECRET = "rebecca-2338-secret";
