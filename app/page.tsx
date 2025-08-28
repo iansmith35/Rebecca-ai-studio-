@@ -15,8 +15,11 @@ function ClientShell(){
       <Sidebar active={active} onSelect={setActive}/>
       <section style={{flex:1, padding:20, display:"grid", gap:16}}>
         <header className="row" style={{justifyContent:"space-between"}}>
-          <h1 className="h" style={{fontSize:22}}>{label(active)} - Deployment Test {new Date().toISOString().slice(0,16)}</h1>
+          <h1 className="h" style={{fontSize:22}}>{label(active)} - 🚀 DEPLOYMENT VERIFICATION ACTIVE 🚀 {new Date().toISOString()}</h1>
           <div className="row small">
+            <div style={{background: '#ff6b6b', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', marginRight: '8px'}}>
+              DEPLOY CHECK: {new Date().toISOString().split('T')[0]}
+            </div>
             <a href="/api/rebecca" className="link">Health</a>
             <a href="/api/rebecca" className="link">•</a>
             <a href="#" onClick={(e)=>{e.preventDefault(); window.open("/api/rebecca","_blank");}} className="link">Authorize Backend</a>
