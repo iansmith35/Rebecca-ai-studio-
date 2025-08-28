@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
+import { REBECCA } from "@/lib/rebeccaConfig";
 
 type Thread = { id: string; title: string; last?: string };
 
 async function listThreads(): Promise<Thread[]>{
-  const r = await fetch("/api/rebecca",{ method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ action:"listChats" })});
+  const r = await fetch(REBECCA.appsScriptURL,{ method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ action:"listChats" })});
   const j = await r.json(); return j?.items||[];
 }
 
@@ -18,13 +19,13 @@ export default function Conversations({ active, onSelect }:{ active:string; onSe
   const create = async()=>{
     const title = name.trim() || "New chat";
     const id = crypto.randomUUID();
-    await fetch("/api/rebecca",{ method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ action:"createChat", id, title })});
+    await fetch(REBECCA.appsScriptURL,{ method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ action:"createChat", id, title })});
     setName(""); await refresh(); onSelect(id);
   };
   const rename = async(id:string)=>{
     const title = prompt("Rename conversation", threads.find(t=>t.id===id)?.title||"")||"";
     if(!title.trim()) return;
-    await fetch("/api/rebecca",{ method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ action:"renameChat", id, title })});
+    await fetch(REBECCA.appsScriptURL,{ method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ action:"renameChat", id, title })});
     await refresh();
   };
 

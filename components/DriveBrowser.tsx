@@ -1,8 +1,9 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
+import { REBECCA } from "@/lib/rebeccaConfig";
 
 async function proxy(action:string,payload:any){ 
-  const r=await fetch('/api/rebecca',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...payload})}); 
+  const r=await fetch(REBECCA.appsScriptURL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...payload})}); 
   return await r.json(); 
 }
 
