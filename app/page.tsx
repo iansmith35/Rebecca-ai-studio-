@@ -1,6 +1,7 @@
 "use client";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import NetworkDebugger from "@/components/NetworkDebugger";
 import { ISHEPanel, PersonalPanel } from "@/components/Panels";
 import { REBECCA } from "@/lib/rebeccaConfig";
 import { useState } from "react";
@@ -30,6 +31,7 @@ function ClientShell(){
         {active==="eventsafe" && <div className="neon" style={{padding:14}}>Event Safe — placeholder</div>}
         {active==="kinkybrizzle" && <div className="neon" style={{padding:14}}>Kinky Brizzle — placeholder</div>}
       </section>
+      <NetworkDebugger />
     </div>
   );
 }
