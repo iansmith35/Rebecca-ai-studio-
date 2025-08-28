@@ -39,12 +39,12 @@ export default function Chat({ threadId }:{ threadId:string }){
     
     // Task detection - automatically add tasks for reminders/todos
     if(/^(\s*(remind|add task|todo|to do))/i.test(text)) {
-      await fetch("/api/rebecca",{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'addTask', sheetId:REBECCA.sheetId, text})});
+      await fetch(REBECCA.appsScriptURL,{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'addTask', sheetId:REBECCA.sheetId, text})});
     }
     
     const replyRaw=await gemini(text); const reply=cleanEmojis(replyRaw);
     setMessages(m=>[...m,{role:"rebecca",text:reply||"(no reply)"}]); setSpeech(reply);
-    await fetch("/api/rebecca",{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logChat', threadId, sheetId:REBECCA.sheetId, userText:text, botText:reply })});
+    await fetch(REBECCA.appsScriptURL,{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logChat', threadId, sheetId:REBECCA.sheetId, userText:text, botText:reply })})
   };
 
   return (

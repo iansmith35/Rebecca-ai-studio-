@@ -1,9 +1,46 @@
 "use client";
 import { useEffect, useState } from "react";
+import { REBECCA } from "@/lib/rebeccaConfig";
 
 async function tm(path:string, opts:any){
-  const r = await fetch("/api/textmagic",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ path, ...opts })});
-  return await r.json();
+  const { method = 'GET', username, apiKey, qs, body } = opts;
+  
+  if (!username || !apiKey) {
+    throw new Error('TextMagic credentials required');
+  }
+
+  // Construct the TextMagic API URL
+  let url = `${REBECCA.textmagic.base}/${path}`;
+  
+  // Add query string parameters
+  if (qs && method === 'GET') {
+    const params = new URLSearchParams(qs);
+    url += `?${params.toString()}`;
+  }
+
+  // Set up the request
+  const fetchOptions: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Basic ${btoa(`${username}:${apiKey}`)}`,
+    },
+  };
+
+  // Add body for POST requests
+  if (body && method === 'POST') {
+    fetchOptions.body = JSON.stringify(body);
+  }
+
+  // Make the request to TextMagic API
+  const response = await fetch(url, fetchOptions);
+  const data = await response.json();
+
+  return { 
+    ok: response.ok,
+    data,
+    status: response.status
+  };
 }
 
 export default function TextMagicPanel(){

@@ -5,7 +5,7 @@ export default function Dropzone({ scope }:{ scope:"ishe"|"personal" }){
   const onChange=async(files:FileList|null)=>{ if(!files||!files.length)return; setBusy(true); setMsg("");
     try{ for(const f of Array.from(files)){
       const buf=await f.arrayBuffer(); const base64=btoa(String.fromCharCode(...new Uint8Array(buf)));
-      const res=await fetch("/api/rebecca",{ method:"POST", headers:{ "Content-Type":"application/json" },
+      const res=await fetch(REBECCA.appsScriptURL,{ method:"POST", headers:{ "Content-Type":"application/json" },
         body: JSON.stringify({ action:"uploadFile", sheetId:REBECCA.sheetId, filename:f.name, mimeType:f.type||"application/octet-stream", base64, scope })});
       const j=await res.json(); if(!j?.ok) throw new Error(j?.error||"Upload failed");
     } setMsg("Uploaded ✅"); }catch(e:any){ setMsg(e.message||String(e)); } setBusy(false);

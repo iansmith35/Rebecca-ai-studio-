@@ -21,9 +21,9 @@ function ClientShell(){
             <div style={{background: '#ff6b6b', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', marginRight: '8px'}}>
               DEPLOY CHECK: {new Date().toISOString().split('T')[0]}
             </div>
-            <a href="/api/rebecca" className="link">Health</a>
+            <a href={REBECCA.appsScriptURL} className="link" target="_blank">Health</a>
             <a href="/api/rebecca" className="link">•</a>
-            <a href="#" onClick={(e)=>{e.preventDefault(); window.open("/api/rebecca","_blank");}} className="link">Authorize Backend</a>
+            <a href="#" onClick={(e)=>{e.preventDefault(); window.open(REBECCA.appsScriptURL,"_blank");}} className="link">Authorize Backend</a>
           </div>
         </header>
         {active==="ishe" && <ISHEPanel/>}

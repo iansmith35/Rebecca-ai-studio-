@@ -4,7 +4,7 @@ import { REBECCA } from "@/lib/rebeccaConfig";
 import HandsFree from "./HandsFree";
 
 async function proxy(action:string,payload:any){ 
-  const r=await fetch('/api/rebecca',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...payload})}); 
+  const r=await fetch(REBECCA.appsScriptURL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...payload})}); 
   return await r.json(); 
 }
 
