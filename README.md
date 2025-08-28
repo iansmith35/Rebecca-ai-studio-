@@ -21,9 +21,26 @@ View your app in AI Studio: https://ai.studio/apps/drive/1H1vvoWNk7J_5MylnGRHIrd
 
 ## Backend Setup
 
-The Rebecca AI Studio requires a Google Apps Script backend to handle Gmail, Calendar, and Drive integration.
+The Rebecca AI Studio supports two backend options for handling Gmail, Calendar, and Drive integration:
 
-### Quick Setup
+### Option 1: Firebase Functions (Recommended)
+
+**Modern, scalable backend with TypeScript support**
+
+1. Follow the instructions in [`functions/README.md`](functions/README.md) to deploy Firebase Functions
+2. Update the `appsScriptURL` in [`lib/rebeccaConfig.ts`](lib/rebeccaConfig.ts) with your Firebase Functions URL
+3. Set up Google Service Account for API access (see functions README)
+
+Quick deployment:
+```bash
+cd functions
+firebase deploy --only functions
+```
+
+### Option 2: Google Apps Script (Legacy)
+
+**Traditional Google Apps Script backend**
+
 1. Follow the instructions in [`backend/README.md`](backend/README.md) to deploy the Google Apps Script
 2. Update the `appsScriptURL` in [`lib/rebeccaConfig.ts`](lib/rebeccaConfig.ts) with your deployed Web App URL
 3. Visit the Web App URL to authorize the required permissions
@@ -34,4 +51,4 @@ The Rebecca AI Studio requires a Google Apps Script backend to handle Gmail, Cal
 - Google Drive integration (file upload/listing)
 - Google Sheets integration (task logging and chat history)
 
-For detailed deployment instructions, see [`backend/README.md`](backend/README.md).
+For detailed deployment instructions, see [`functions/README.md`](functions/README.md) or [`backend/README.md`](backend/README.md).
