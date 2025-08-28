@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "setup:firebase": "./setup-firebase.sh",
+    "functions:build": "cd functions && npm run build",
+    "functions:deploy": "cd functions && firebase deploy --only functions",
+    "functions:serve": "cd functions && npm run serve"
   },
   "dependencies": {
     "@google/genai": "^1.14.0",
