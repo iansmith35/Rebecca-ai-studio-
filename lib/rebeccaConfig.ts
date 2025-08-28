@@ -2,6 +2,8 @@ export const REBECCA = {
   adminEmail: "ian@ishe-ltd.co.uk",
   personalPin: "2338",
   geminiKey: process.env.NEXT_PUBLIC_API_KEY || "AIzaSyCQgeQIeKHK3Kwf-vripbVruqDlOiWsP6E",
+  // OpenAI API Key (for fallback AI provider)
+  openaiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
   // Firebase Functions Backend URL (replaces Apps Script)
   appsScriptURL: process.env.NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL || "https://us-central1-your-project-id.cloudfunctions.net/api",
   // Legacy Apps Script URL (kept as backup/reference)
