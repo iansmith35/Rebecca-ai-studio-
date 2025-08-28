@@ -15,9 +15,29 @@ View your app in AI Studio: https://ai.studio/apps/drive/1H1vvoWNk7J_5MylnGRHIrd
 1. Install dependencies:
    `npm install`
 2. Set the `NEXT_PUBLIC_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Deploy the backend (see Backend Setup section below)
-4. Run the app:
+3. **Optional:** Set the `NEXT_PUBLIC_OPENAI_API_KEY` in [.env.local](.env.local) for OpenAI fallback support
+4. Deploy the backend (see Backend Setup section below)
+5. Run the app:
    `npm run dev`
+
+### OpenAI API Fallback
+
+To use OpenAI as a fallback AI provider, set your OpenAI API key in `.env.local`:
+
+```
+NEXT_PUBLIC_OPENAI_API_KEY=your-openai-api-key-here
+```
+
+**How it works:**
+- The app will use Gemini as the primary AI provider
+- If Gemini fails, it will automatically fall back to OpenAI
+- You can see which provider is active in the chat interface
+- Get your OpenAI API key from: https://platform.openai.com/account/api-keys
+
+**Benefits:**
+- Improved reliability - if one provider is down, the other takes over
+- Zero downtime for AI features
+- Automatic fallback without user intervention
 
 ## Backend Setup
 
