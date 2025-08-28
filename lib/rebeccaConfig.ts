@@ -2,8 +2,10 @@ export const REBECCA = {
   adminEmail: "ian@ishe-ltd.co.uk",
   personalPin: "2338",
   geminiKey: process.env.NEXT_PUBLIC_API_KEY || "AIzaSyCQgeQIeKHK3Kwf-vripbVruqDlOiWsP6E",
-  // Apps Script Web App (Deploy > New Deployment > Web App > Execute as Me, Only Me)
-  appsScriptURL: "https://script.google.com/macros/s/AKfycbxbJ7XQq8RU6m4wNNXz7XXB9tPngbgHhHowmtoPAvvS2xYcRzlKztwvFEllMsIFvimH8g/exec",
+  // Firebase Functions Backend URL (replaces Apps Script)
+  appsScriptURL: process.env.NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL || "https://us-central1-your-project-id.cloudfunctions.net/api",
+  // Legacy Apps Script URL (kept as backup/reference)
+  legacyAppsScriptURL: "https://script.google.com/macros/s/AKfycbxbJ7XQq8RU6m4wNNXz7XXB9tPngbgHhHowmtoPAvvS2xYcRzlKztwvFEllMsIFvimH8g/exec",
   // Voiceflow/Rebecca HQ Sheet (Memory/Tasks)
   sheetId: "1OGLC-mafxToexD4rXx5pVbCNOEO6DP5T6s05REwbdvY",
 
