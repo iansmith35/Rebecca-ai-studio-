@@ -20,6 +20,26 @@ View your app in AI Studio: https://ai.studio/apps/drive/1H1vvoWNk7J_5MylnGRHIrd
 5. Run the app:
    `npm run dev`
 
+## Contributing
+
+We follow a structured workflow for contributions to ensure clean history and deployment tracking. See [CONTRIBUTING.md](CONTRIBUTING.md) for our detailed workflow including:
+
+- 🔄 **Branch workflow**: How to create feature branches and submit PRs
+- 🛠️ **Helper scripts**: Automated tools for common tasks
+- ✅ **Validation**: Pre-submission checks to ensure quality
+
+**Quick start for contributors:**
+```bash
+# Start a new feature
+./scripts/new-feature.sh "your-feature-description"
+
+# Validate before submitting
+./scripts/validate-changes.sh
+
+# Cleanup after PR is merged
+./scripts/cleanup-branch.sh
+```
+
 ### OpenAI API Fallback
 
 To use OpenAI as a fallback AI provider, set your OpenAI API key in `.env.local`:
