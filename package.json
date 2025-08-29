@@ -13,6 +13,7 @@
     "functions:serve": "cd functions && npm run serve"
   },
   "dependencies": {
+    "@google-cloud/secret-manager": "^6.1.0",
     "@google/genai": "^1.14.0",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/react": "^19.1.11",

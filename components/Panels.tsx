@@ -4,6 +4,7 @@ import QuickTask from "./QuickTask";
 import Tasks from "./Tasks";
 import DriveBrowser from "./DriveBrowser";
 import TextMagicPanel from "./TextMagicPanel";
+import AdminLoginForm from "./AdminLoginForm";
 import { REBECCA } from "@/lib/rebeccaConfig";
 import { useEffect, useState } from "react";
 
@@ -57,15 +58,45 @@ export function ISHEPanel(){
 export function PersonalPanel(){
   const [ok,setOk]=useState(false);
   const [pin,setPin]=useState("");
-  if(!ok) return (
-    <div className="neon" style={{padding:14}}>
-      <div className="card-title">Personal Hub</div>
-      <div className="row">
-        <input className="input" value={pin} onChange={e=>setPin(e.target.value)} placeholder="Enter PIN"/>
-        <button onClick={()=>setOk(pin===REBECCA.personalPin)} className="btn">Unlock</button>
+  const [useSecretManager, setUseSecretManager] = useState(false);
+
+  if(!ok) {
+    if (useSecretManager) {
+      return (
+        <div className="grid" style={{gap:16}}>
+          <AdminLoginForm onAuthSuccess={() => setOk(true)} />
+          <div className="neon" style={{padding:14, textAlign: 'center'}}>
+            <button 
+              onClick={() => setUseSecretManager(false)} 
+              className="btn" 
+              style={{background: 'transparent', border: '1px solid var(--border)', fontSize: '12px'}}
+            >
+              Use Legacy PIN Instead
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="neon" style={{padding:14}}>
+        <div className="card-title">Personal Hub</div>
+        <div className="row">
+          <input className="input" value={pin} onChange={e=>setPin(e.target.value)} placeholder="Enter PIN"/>
+          <button onClick={()=>setOk(pin===REBECCA.personalPin)} className="btn">Unlock</button>
+        </div>
+        <div style={{marginTop: 16, textAlign: 'center'}}>
+          <button 
+            onClick={() => setUseSecretManager(true)} 
+            className="btn" 
+            style={{background: 'transparent', border: '1px solid var(--border)', fontSize: '12px'}}
+          >
+            Use Secret Manager Login
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
   return (
     <div className="grid" style={{gap:16}}>
       <Chat threadId="default-personal"/>
