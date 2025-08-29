@@ -72,3 +72,31 @@ firebase deploy --only functions
 - Google Sheets integration (task logging and chat history)
 
 For detailed deployment instructions, see [`functions/README.md`](functions/README.md) or [`backend/README.md`](backend/README.md).
+
+## Development Workflow
+
+This repository follows a structured git workflow for clean development and deployment. See [GIT_WORKFLOW.md](GIT_WORKFLOW.md) for complete instructions.
+
+### Quick Start
+
+**Create a new feature:**
+```bash
+./create-feature-branch.sh "your-feature-description"
+# Make your changes
+git add .
+git commit -m "Add your feature"
+git push origin feature/your-feature-description
+# Create PR on GitHub
+```
+
+**After PR merge:**
+```bash
+./cleanup-branch.sh feature/your-feature-description
+```
+
+**Validate your workflow:**
+```bash
+./validate-workflow.sh
+```
+
+This ensures each PR gets a unique number and maintains clean git history.
