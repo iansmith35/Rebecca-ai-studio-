@@ -3,6 +3,12 @@ import * as admin from "firebase-admin";
 import {google} from "googleapis";
 import * as functions from "firebase-functions";
 
+// Export the health endpoint
+export * from './health';
+
+// Export automation functions
+export * from './automation';
+
 // Initialize Firebase Admin
 admin.initializeApp();
 

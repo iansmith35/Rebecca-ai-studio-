@@ -1,7 +1,7 @@
 import { logApiCall, formatApiError } from './diagnostics';
 
 // Improved API client with better error handling
-export async function fetchFromBackend(endpoint: string, options = {}) {
+export async function fetchFromBackend(endpoint: string, options: any = {}) {
   const apiUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   
   if (!apiUrl) {

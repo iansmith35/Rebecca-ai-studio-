@@ -2,12 +2,26 @@ import { useState, useEffect } from 'react';
 import { checkBackendHealth } from '../utils/api-client';
 
 export default function BackendStatusCheck() {
-  const [status, setStatus] = useState({ loading: true, success: false, message: 'Checking backend connection...' });
+  const [status, setStatus] = useState<{ 
+    loading: boolean; 
+    success: boolean; 
+    message: string; 
+    error?: any 
+  }>({ loading: true, success: false, message: 'Checking backend connection...' });
 
   useEffect(() => {
     const checkHealth = async () => {
-      const result = await checkBackendHealth();
-      setStatus({ loading: false, ...result });
+      try {
+        const result = await checkBackendHealth();
+        setStatus({ loading: false, ...result });
+      } catch (error) {
+        setStatus({ 
+          loading: false,
+          success: false,
+          message: 'Failed to check backend health',
+          error
+        });
+      }
     };
     
     checkHealth();

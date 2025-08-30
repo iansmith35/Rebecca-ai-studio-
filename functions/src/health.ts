@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 
 export const health = functions.https.onRequest((request, response) => {
-  // Enable CORS
+  // Enable CORS for all origins
   response.set('Access-Control-Allow-Origin', '*');
   response.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
   response.set('Access-Control-Allow-Headers', 'Content-Type');
@@ -16,6 +16,7 @@ export const health = functions.https.onRequest((request, response) => {
   response.status(200).json({ 
     status: 'ok',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    projectId: process.env.GCLOUD_PROJECT
   });
 });

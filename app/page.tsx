@@ -2,6 +2,7 @@
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import NetworkDebugger from "@/components/NetworkDebugger";
+import BackendStatusCheck from "./components/BackendStatusCheck";
 import { ISHEPanel, PersonalPanel } from "@/components/Panels";
 import { REBECCA } from "@/lib/rebeccaConfig";
 import { useState } from "react";
@@ -26,6 +27,7 @@ function ClientShell(){
             <a href="#" onClick={(e)=>{e.preventDefault(); window.open(REBECCA.appsScriptURL,"_blank");}} className="link">Authorize Backend</a>
           </div>
         </header>
+        <BackendStatusCheck />
         {active==="ishe" && <ISHEPanel/>}
         {active==="personal" && <PersonalPanel/>}
         {active==="eventsafe" && <div className="neon" style={{padding:14}}>Event Safe — placeholder</div>}
