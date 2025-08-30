@@ -2,7 +2,7 @@
   "hosting": [
     {
       "target": "rebecca-dashboard",
-      "public": "dist",
+      "public": "out",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
@@ -13,7 +13,7 @@
     },
     {
       "target": "empirehq",
-      "public": "dist",
+      "public": "out",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
