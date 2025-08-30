@@ -1,31 +1,47 @@
 import { useState, useEffect } from 'react';
 import { checkBackendHealth } from '../utils/api-client';
+import { getConfig, getCurrentEnvironment } from '../config/environments';
 
 export default function BackendStatusCheck() {
   const [status, setStatus] = useState<{ 
     loading: boolean; 
     success: boolean; 
     message: string; 
-    error?: any 
-  }>({ loading: true, success: false, message: 'Checking backend connection...' });
+    environment: string;
+    error?: any;
+  }>({ 
+    loading: true, 
+    success: false, 
+    message: 'Checking backend connection...',
+    environment: getCurrentEnvironment()
+  });
 
   useEffect(() => {
     const checkHealth = async () => {
       try {
         const result = await checkBackendHealth();
-        setStatus({ loading: false, ...result });
+        setStatus({ 
+          loading: false, 
+          success: result.success,
+          message: result.message,
+          environment: result.environment || getCurrentEnvironment(),
+          error: result.error
+        });
       } catch (error) {
         setStatus({ 
           loading: false,
           success: false,
           message: 'Failed to check backend health',
-          error
+          error,
+          environment: getCurrentEnvironment()
         });
       }
     };
     
     checkHealth();
   }, []);
+
+  const config = getConfig();
 
   return (
     <div className="p-4 mb-4 rounded-lg border" style={{ 
@@ -37,19 +53,23 @@ export default function BackendStatusCheck() {
       </h3>
       <p>{status.message}</p>
       
-      {!status.success && !status.loading && (
-        <div className="mt-2">
-          <p className="text-sm text-gray-600">
-            API URL: {process.env.NEXT_PUBLIC_BACKEND_API_URL || 'Not configured'}
-          </p>
+      <div className="mt-2">
+        <p className="text-sm text-gray-600">
+          Environment: {config.name} ({config.region})
+        </p>
+        <p className="text-sm text-gray-600">
+          API URL: {config.backendUrl}
+        </p>
+        
+        {!status.success && !status.loading && (
           <details className="mt-2">
             <summary className="cursor-pointer text-sm text-blue-500">Show debugging details</summary>
             <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto">
               {JSON.stringify(status.error, null, 2)}
             </pre>
           </details>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

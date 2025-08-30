@@ -12,11 +12,12 @@ export const health = functions.https.onRequest((request, response) => {
     return;
   }
   
-  // Return health status
+  // Return health status with region information
   response.status(200).json({ 
     status: 'ok',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    projectId: process.env.GCLOUD_PROJECT
+    projectId: process.env.GCLOUD_PROJECT,
+    region: process.env.FUNCTION_REGION || 'unknown',
   });
 });

@@ -1,5 +1,17 @@
 {
   "projects": {
-    "default": "your-firebase-project-id"
+    "default": "rebbeca-bot"
+  },
+  "targets": {
+    "rebbeca-bot": {
+      "hosting": {
+        "rebecca-dashboard": [
+          "rebecca-dashboard--rebecca-bot"
+        ],
+        "empirehq": [
+          "empirehq--rebecca-bot"
+        ]
+      }
+    }
   }
 }

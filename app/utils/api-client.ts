@@ -1,18 +1,21 @@
 import { logApiCall, formatApiError } from './diagnostics';
+import { getConfig } from '../config/environments';
 
-// Improved API client with better error handling
-export async function fetchFromBackend(endpoint: string, options: any = {}) {
-  const apiUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+// Improved API client with better error handling and environment awareness
+export async function fetchFromBackend(endpoint: string, options: RequestInit = {}) {
+  // Get the environment-specific backend URL
+  const config = getConfig();
+  const apiUrl = config.backendUrl;
   
   if (!apiUrl) {
-    console.error('❌ NEXT_PUBLIC_BACKEND_API_URL is not defined in environment variables');
-    throw new Error('Backend URL not configured. Check your .env file.');
+    console.error('❌ Backend URL is not defined for current environment');
+    throw new Error('Backend URL not configured. Check environment configuration.');
   }
   
   const url = `${apiUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
   
   try {
-    console.log(`🔄 Fetching from: ${url}`);
+    console.log(`🔄 Fetching from: ${url} (${config.name} environment)`);
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -59,10 +62,13 @@ export async function checkBackendHealth() {
     const result = await fetchFromBackend('/api/health');
     return { success: true, message: 'Connected to backend successfully!' };
   } catch (error) {
+    const config = getConfig();
     return { 
       success: false, 
-      message: formatApiError(error, process.env.NEXT_PUBLIC_BACKEND_API_URL),
-      error 
+      message: formatApiError(error, config.backendUrl),
+      error,
+      environment: config.name,
+      region: config.region
     };
   }
 }
