@@ -6,10 +6,10 @@
     "rebbeca-bot": {
       "hosting": {
         "rebecca-dashboard": [
-          "rebecca-dashboard--rebecca-bot"
+          "rebecca-dashboard--rebbeca-bot"
         ],
         "empirehq": [
-          "empirehq--rebecca-bot"
+          "empirehq--rebbeca-bot"
         ]
       }
     }
