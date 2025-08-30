@@ -23,8 +23,11 @@
       ]
     }
   ],
-  "functions": {
-    "source": "functions",
-    "predeploy": ["npm --prefix functions run build"]
-  }
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "predeploy": ["npm --prefix functions run build"]
+    }
+  ]
 }
