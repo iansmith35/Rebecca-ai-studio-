@@ -13,6 +13,7 @@ export const REBECCA = {
 
   brands: [
     { key: "ishe", label: "ISHE Plumbing & Heating", default: true },
+    { key: "crm", label: "ISHE Group CRM", default: false },
     { key: "eventsafe", label: "Event Safe", default: false },
     { key: "kinkybrizzle", label: "Kinky Brizzle", default: false },
     { key: "personal", label: "Personal Hub", default: false, gated: true },

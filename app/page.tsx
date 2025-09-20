@@ -4,6 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import NetworkDebugger from "@/components/NetworkDebugger";
 import BackendStatusCheck from "./components/BackendStatusCheck";
 import { ISHEPanel, PersonalPanel } from "@/components/Panels";
+import CRMDashboard from "@/components/CRMDashboard";
 import { REBECCA } from "@/lib/rebeccaConfig";
 import { useState } from "react";
 
@@ -30,6 +31,7 @@ function ClientShell(){
         <BackendStatusCheck />
         {active==="ishe" && <ISHEPanel/>}
         {active==="personal" && <PersonalPanel/>}
+        {active==="crm" && <CRMDashboard/>}
         {active==="eventsafe" && <div className="neon" style={{padding:14}}>Event Safe — placeholder</div>}
         {active==="kinkybrizzle" && <div className="neon" style={{padding:14}}>Kinky Brizzle — placeholder</div>}
       </section>
