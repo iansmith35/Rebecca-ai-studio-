@@ -2,22 +2,31 @@ name: Hetzner CRM Deployment
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Deploy to Hetzner
-      env:
-        HETZNER_TOKEN: ${{ secrets.HETZNER_API }}
-        SERVER_ID: ${{ secrets.HETZNER_SERVER_ID }}
-      run: |
-        curl -X POST \
-          -H "Authorization: Bearer $HETZNER_API" \
-          -H "Content-Type: application/json" \
-          -d '{
-          "command": "restart"
-        }' \
-          "https://api.hetzner.cloud/v1/servers/$SERVER_ID/actions/reboot"
+      - name: Set up job
+        run: echo "Starting Hetzner deploy job..."
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Hetzner
+        env:
+          HETZNER_API: ${{ secrets.HETZNER_API }}
+          HETZNER_SERVER_ID: ${{ secrets.HETZNER_SERVER_ID }}
+        run: |
+          echo "Rebooting Hetzner server ID: $HETZNER_SERVER_ID"
+          curl -X POST \
+            -H "Authorization: Bearer ${HETZNER_API}" \
+            -H "Content-Type: application/json" \
+            -d '{"action":"reboot"}' \
+            "https://api.hetzner.cloud/v1/servers/${HETZNER_SERVER_ID}/actions/reboot"
+
+      - name: Complete job
+        run: echo "Deployment complete."
