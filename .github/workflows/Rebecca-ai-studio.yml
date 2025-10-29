@@ -1,0 +1,23 @@
+name: Hetzner CRM Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Deploy to Hetzner
+      env:
+        HETZNER_TOKEN: ${{ secrets.HETZNER_API }}
+        SERVER_ID: ${{ secrets.HETZNER_SERVER_ID }}
+      run: |
+        curl -X POST \
+          -H "Authorization: Bearer $HETZNER_API" \
+          -H "Content-Type: application/json" \
+          -d '{
+          "command": "restart"
+        }' \
+          "https://api.hetzner.cloud/v1/servers/$SERVER_ID/actions/reboot"
