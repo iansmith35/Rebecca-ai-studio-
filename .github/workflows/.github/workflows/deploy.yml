@@ -1,0 +1,23 @@
+name: Deploy to Hetzner
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trigger Hetzner rebuild
+        env:
+          HETZNER_API_KEY: ${{ secrets.HETZNER_API_KEY }}
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer $HETZNER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"command": "rebuild_server"}' \
+            https://api.hetzner.cloud/v1/servers/111803098/actions
